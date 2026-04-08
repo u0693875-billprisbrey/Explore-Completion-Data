@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Column Selection</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Column Selection_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Column Selection_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Column Selection_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Column Selection_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="Column Selection_files/libs/quarto-html/popper.min.js"></script>
+<script src="Column Selection_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Column Selection_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Column Selection_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Column Selection_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Column Selection_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Column Selection_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Column Selection_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="Column Selection_files/libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="Column Selection_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Column Selection</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>PURPOSE:</strong> The purpose of this report is to examine and select columns from COMBINED_DEGREE_V table for further use and modeling. It examines columns for similarity (such as “MAJOR” and “MAJOR_CD”) and variance.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">##########  </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="do">## LOAD ##  </span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">########## </span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>gradData <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"Data"</span>, <span class="st">"gradData_early_pull.rds"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">###############</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="do">## FUNCTIONS ##</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="do">###############</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>detSim <span class="ot">&lt;-</span> <span class="cf">function</span>(col1,col2) {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This function "determines similarity" between columns to determine if the columns are redundant or in other words if they are different labels for the same thing.  For example, "COLLEGE" and "COLLEGE_SHORT" should be completely redundant.  However, "COLLEGE" and "ACAD_COLLEGE_CIP_CD" might not be redundant.  </span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  testTable <span class="ot">&lt;-</span> <span class="fu">table</span>(col1,col2) <span class="sc">|&gt;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame.matrix</span>()</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Every row and every column has exactly one non-zero cell</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  identicalTest <span class="ot">&lt;-</span> </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">all</span>(<span class="fu">apply</span>(testTable, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">==</span> <span class="dv">1</span>)) <span class="sc">&amp;&amp;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">all</span>(<span class="fu">apply</span>(testTable, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(identicalTest) {<span class="fu">return</span>(</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">sim =</span> <span class="st">"Identical"</span>, <span class="at">row =</span> <span class="cn">NA</span>, <span class="at">col =</span> <span class="cn">NA</span>))</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return row and columns that are off </span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  offRow <span class="ot">&lt;-</span> <span class="fu">apply</span>(testTable, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>)) <span class="sc">|&gt;</span> (\(x){<span class="fu">which</span>(x<span class="sc">&gt;</span><span class="dv">1</span>)})()</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  offCol <span class="ot">&lt;-</span> <span class="fu">apply</span>(testTable, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">sum</span>(x <span class="sc">&gt;</span> <span class="dv">0</span>)) <span class="sc">|&gt;</span> (\(x){<span class="fu">which</span>(x<span class="sc">&gt;</span><span class="dv">1</span>)})()</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># percentage difference</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  row_max_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">apply</span>(testTable, <span class="dv">1</span>, max))</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  col_max_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">apply</span>(testTable, <span class="dv">2</span>, max))</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  row_sim <span class="ot">&lt;-</span> row_max_sum <span class="sc">/</span> <span class="fu">sum</span>(testTable)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  col_sim <span class="ot">&lt;-</span> col_max_sum <span class="sc">/</span> <span class="fu">sum</span>(testTable)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">sim =</span> <span class="fu">min</span>(row_sim, col_sim), <span class="at">row =</span> offRow, <span class="at">col =</span> offCol))</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>createCombinatorics <span class="ot">&lt;-</span> <span class="cf">function</span>(vec) {</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This function receives a vector of column names and then produces a grid of every dual combination.  It will be used to calculate the similarity</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  full_grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(vec,vec,<span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  reduced_grid <span class="ot">&lt;-</span> full_grid[full_grid<span class="sc">$</span>Var1 <span class="sc">&lt;</span> full_grid<span class="sc">$</span>Var2,]</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(reduced_grid)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>family_detSim <span class="ot">&lt;-</span> <span class="cf">function</span>(fam, data){</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  <span class="co"># where fam is a vector of column names chosen for their suspected similarity</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  <span class="co"># where data is the dataframe where the columns occur</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>sim_list <span class="ot">&lt;-</span> fam <span class="sc">|&gt;</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="fu">createCombinatorics</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  (\(comb){</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setNames</span>(</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(comb),</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>         <span class="cf">function</span>(y){</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>           <span class="fu">detSim</span>(data[, comb[y,<span class="st">"Var1"</span>]], data[,comb[y,<span class="st">"Var2"</span>]])</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>         }</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>         ),</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(comb[,<span class="st">"Var1"</span>],comb[,<span class="st">"Var2"</span>])</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>  })()</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(sim_list)</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a><span class="do">## MODIFIED CLEANING FUNCTION ##  </span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>cleanDiff <span class="ot">&lt;-</span> <span class="cf">function</span>(majr, majr_short) {</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>  short_intermediate <span class="ot">&lt;-</span> majr_short <span class="sc">|&gt;</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    (\(x)({<span class="fu">gsub</span>(<span class="st">"Psychology Teaching"</span>, <span class="st">"Psychology"</span>, x)}))() <span class="sc">|&gt;</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>    (\(x)({<span class="fu">gsub</span>(<span class="st">"Health Promotion &amp; Education Teaching"</span>, <span class="st">"Health Promotion &amp; Education"</span>, x)}))() <span class="sc">|&gt;</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>  (\(x)({<span class="fu">gsub</span>(<span class="st">"Consumer &amp; Community Studies"</span>, <span class="st">"Consumer &amp; Communities Studies"</span>, x)}))() <span class="sc">|&gt;</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>  (\(x)({<span class="fu">gsub</span>(<span class="st">"Parks, Recreation &amp; Tourism"</span>, <span class="st">"Parks, Recreation, &amp; Tourism"</span>, x)}))() <span class="sc">|&gt;</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>    (\(x)({<span class="fu">gsub</span>(<span class="st">"Health, Society &amp; Policy"</span>, <span class="st">"Health, Society, &amp; Policy"</span>, x)}))()</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>  charDiff <span class="ot">&lt;-</span> <span class="fu">mapply</span>(<span class="cf">function</span>(x,y) {<span class="fu">gsub</span>(x, <span class="st">""</span>, y) }, <span class="at">x =</span> short_intermediate, <span class="at">y =</span> majr)</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return(short_intermediate)</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(charDiff)</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">#####################</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">## COLUMN FAMILIES ##</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">#####################</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># columns that sound like they are similar</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>div_fam <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ACAD_DIVISION_CD"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"DIVISION"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"DIVISION_SHORT"</span>, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"DIVISION_FORMAL"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ACAD_DIVISION_CIP_CD"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"DIVISION_CD"</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>college_fam <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"COLLEGE_SHORT"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ACAD_COLLEGE_CIP_CD"</span>, </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"COLLEGE_CD"</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"SNAP_MAJORCOLL"</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>dept_fam <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>   <span class="st">"MAJOR_ACAD_ORG_CD"</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>   <span class="st">"ACAD_DEPARTMENT_CD"</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DEPARTMENT"</span>, </span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>   <span class="st">"DEPARTMENT_SHORT"</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>   <span class="st">"DEPARTMENT_FORMAL"</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ACAD_DEPARTMENT_CIP_CD"</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">"DEPARTMENT_CD"</span>, </span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">"SNAP_MAJORDEPT"</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>major_fam <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"MAJOR_CD"</span>, </span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>               <span class="st">"MAJOR"</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>               <span class="st">"MAJOR_SHORT"</span>, </span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>               <span class="st">"MAJOR_LONG"</span>,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>               <span class="st">"MAJOR_GROUP"</span>,</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>               <span class="st">"CIP_CD"</span>,</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>               <span class="st">"MAJOR_ACAD_ORG_CD"</span>,</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>               <span class="st">"SNAP_MAJORCDE"</span>,</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>               <span class="st">"SNAP_MAJORNAME"</span>,</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>               <span class="st">"SNAP_CIP"</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>               )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># college_sim &lt;- family_detSim(fam=college_fam, data = gradData)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>simList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="fu">list</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">div=</span>div_fam,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">college =</span>college_fam,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">dept =</span> dept_fam,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">major =</span> major_fam</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       family_detSim, <span class="at">data =</span> gradData)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="results" class="level1">
+<h1>Results</h1>
+<section id="columns-per-family-selected" class="level2">
+<h2 class="anchored" data-anchor-id="columns-per-family-selected">Columns per ‘Family’ Selected</h2>
+<section id="divisions" class="level3">
+<h3 class="anchored" data-anchor-id="divisions"><strong>Divisions:</strong></h3>
+<p>The columns “ACAD_DIVISION_CD”, “DIVISION_CD”, “DIVISION”, “DIVISION_SHORT”, and “DIVISION_FORMAL” are identical. They are 98% similar to “ACAD_DIVISION_CIP_CD”.</p>
+<p>For clarity and ease of interpretation, I will select “DIVISION_SHORT” and abandon the rest.</p>
+</section>
+<section id="colleges" class="level3">
+<h3 class="anchored" data-anchor-id="colleges"><strong>Colleges:</strong></h3>
+<p>The columns “ACAD_COLLEGE_CIP_CD”, “COLLEGE_SHORT”, and “COLLEGE_CD” are identical. They are 98% similar to “SNAP_MAJORCOLL.”</p>
+<p>For clarity and ease of interpretation, I will select “COLLEGE_SHORT” and abandon the other three.</p>
+</section>
+<section id="departments" class="level3">
+<h3 class="anchored" data-anchor-id="departments"><strong>Departments:</strong></h3>
+<p>The columns “DEPARTMENT”, “DEPARTMENT_SHORT”, “DEPARTMENT_FORMAL”, “ACAD_DEPARTMENT_CD”, and “DEPARTMENT_CD” are identical.</p>
+<p>These columns are 98.6% similar to ACAD_DEPARTMENT_CIP_CD</p>
+<p>These columns are 97.6% similar to MAJOR_ACAD_ORG_CD</p>
+<p>These columns are 87.2% similar to SNAP_MAJORDEPT.</p>
+<p>ACAD_DEPARTMENT_CIP_CD is 96.3% similar to MAJOR_ACAD_ORG_CD and 86.4% similar to SNAP_MAJORDEPT.</p>
+<p>MAJOR_ACAD_ORG_CD is 88.1% similar to SNAP_MAJORDEPT.</p>
+<p>For clarity and ease of interpretation, I will select “ACAD_DEPARTMENT_CD” and abandon the rest.</p>
+</section>
+<section id="majors" class="level3">
+<h3 class="anchored" data-anchor-id="majors"><strong>Majors:</strong></h3>
+<p>Out of the 10 columns related to major, only two are identical: MAJOR_CD and SNAP_MAJORCDE.</p>
+<p>The remaining columns vary between 47% similarity (MAJOR_ACAD_ORG_CD and SNAP_MAJORNAME) and 99.8% (MAJOR_GROUP and MAJOR_SHORT). Each column’s mean similarity to the other columns is show in [FIGURE] below.</p>
+<p>The column “MAJOR_SHORT” has the second highest mean similarity to the other columns, and will be selected for brevity and clarity. It differs from “MAJOR”, “MAJOR_LONG”, and “MAJOR_CD” in that these columns add details about the degree awarded. With some manipulation, these details are added as two additional columns: “award” and “honors.”</p>
+<p>The column “MAJOR_CD” may be convenient for labels on plots.</p>
+<p>For clarity and ease of interpretation, I will select “MAJOR_SHORT”, “MAJOR” (to extract the degree awarded), and “MAJOR_CD” (for plot labels) and abandon the rest.</p>
+<div class="cell" data-warnings="false">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## MAJOR ## </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>majSim <span class="ot">&lt;-</span> <span class="fu">lapply</span>(simList[[<span class="st">"major"</span>]], <span class="cf">function</span>(x) { x[[<span class="st">"sim"</span>]]}) <span class="sc">|&gt;</span> <span class="fu">unlist</span>() <span class="sc">|&gt;</span> (\(x){x[<span class="fu">order</span>(x, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]})()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>mean_val <span class="ot">&lt;-</span> <span class="fu">lapply</span>(major_fam, <span class="cf">function</span>(maj){</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  majSim[<span class="fu">grepl</span>(maj, <span class="fu">names</span>(majSim))] <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.numeric</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>(<span class="at">na.rm=</span><span class="cn">TRUE</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in mean(as.numeric(majSim[grepl(maj, names(majSim))]), na.rm = TRUE):
+NAs introduced by coercion
+Warning in mean(as.numeric(majSim[grepl(maj, names(majSim))]), na.rm = TRUE):
+NAs introduced by coercion
+Warning in mean(as.numeric(majSim[grepl(maj, names(majSim))]), na.rm = TRUE):
+NAs introduced by coercion</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mean_val) <span class="ot">&lt;-</span> major_fam</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>mean_val <span class="ot">&lt;-</span> mean_val <span class="sc">|&gt;</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  (\(x){x[<span class="fu">order</span>(x, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]})() </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mean_val,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">las =</span> <span class="dv">1</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">"Mean Similarity"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xaxt =</span> <span class="st">"n"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">""</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Mean similarity between 'major' family columns"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>       )</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">grid</span>()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(mean_val)<span class="sc">-</span><span class="dv">2</span>),</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> mean_val[<span class="sc">-</span>(<span class="fu">length</span>(mean_val)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">:-</span><span class="fu">length</span>(mean_val) ] <span class="sc">-</span> <span class="fl">0.02</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">names</span>(mean_val)[<span class="sc">-</span>(<span class="fu">length</span>(mean_val)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">:-</span><span class="fu">length</span>(mean_val) ],</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">srt =</span> <span class="dv">90</span>, <span class="at">cex =</span> <span class="fl">0.6</span>, <span class="at">font =</span> <span class="dv">2</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">adj =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.5</span>))</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x =</span> <span class="fu">length</span>(mean_val)<span class="sc">-</span><span class="fl">1.1</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> mean_val[<span class="fu">length</span>(mean_val)<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">names</span>(mean_val)[<span class="fu">length</span>(mean_val)<span class="sc">-</span><span class="dv">1</span>],</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">srt =</span> <span class="dv">90</span>, </span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">0.6</span>, </span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">font =</span> <span class="dv">2</span>,</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>     <span class="at">adj =</span> <span class="fu">c</span>(<span class="fl">0.60</span>, <span class="dv">0</span>))  </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x =</span> <span class="fu">length</span>(mean_val),</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> mean_val[<span class="fu">length</span>(mean_val)]<span class="sc">+</span><span class="fl">0.025</span>,</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">names</span>(mean_val)[<span class="fu">length</span>(mean_val)],</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>     <span class="at">srt =</span> <span class="dv">90</span>, </span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">0.6</span>, </span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>     <span class="at">font =</span> <span class="dv">2</span>,</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>     <span class="at">adj =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>))  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Column-Selection_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="extraction-of-award-honors-and-teaching-designations" class="level2">
+<h2 class="anchored" data-anchor-id="extraction-of-award-honors-and-teaching-designations">Extraction of award, honors, and teaching designations</h2>
+<p>Comparison of MAJOR_SHORT and MAJOR, with some cleaning and manipulation, extracts the base degree awarded and whether or not an honors degree was awarded.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Difference between MAJOR and MAJOR_SHORT </span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>charDiff <span class="ot">&lt;-</span> <span class="fu">gsub</span>(gradData<span class="sc">$</span>MAJOR_SHORT,  <span class="st">""</span>, gradData<span class="sc">$</span>MAJOR)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>charDiff <span class="ot">&lt;-</span> <span class="fu">mapply</span>(<span class="cf">function</span>(x,y) {<span class="fu">gsub</span>(x, <span class="st">""</span>, y) }, <span class="at">x =</span> gradData<span class="sc">$</span>MAJOR_SHORT, <span class="at">y =</span> gradData<span class="sc">$</span>MAJOR)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>charLength <span class="ot">&lt;-</span> <span class="fu">sapply</span>(charDiff, nchar)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>charLength <span class="sc">|&gt;</span> </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">table</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">ylab =</span> <span class="st">"Count (log)"</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Count of difference in characters"</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Difference in character length </span><span class="sc">\n</span><span class="st">between MAJOR_SHORT and MAJOR"</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>eightY <span class="ot">&lt;-</span> <span class="fu">table</span>(charLength) <span class="sc">|&gt;</span> (\(x){x[<span class="fu">names</span>(x) <span class="sc">==</span> <span class="st">"8"</span>]})() <span class="sc">|&gt;</span> <span class="fu">log</span>()</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x =</span> <span class="dv">7</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> eightY<span class="fl">+0.5</span>,</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"B.A., B.S., etc"</span>,</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>     <span class="co"># pos= 3,</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>     <span class="at">adj =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>     )</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>tenY <span class="ot">&lt;-</span>  <span class="fu">table</span>(charLength) <span class="sc">|&gt;</span> (\(x){x[<span class="fu">names</span>(x) <span class="sc">==</span> <span class="st">"10"</span>]})() <span class="sc">|&gt;</span> <span class="fu">log</span>()</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x =</span> <span class="dv">10</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> tenY <span class="sc">+</span> <span class="fl">0.3</span>,</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"H.B.Mus., H.B.F.A., etc"</span>,</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>     <span class="co"># pos= 3,</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>     <span class="at">adj =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>     )</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>sixteenY <span class="ot">&lt;-</span> <span class="fu">table</span>(charLength) <span class="sc">|&gt;</span> (\(x){x[<span class="fu">names</span>(x) <span class="sc">==</span> <span class="st">"16"</span>]})() <span class="sc">|&gt;</span> <span class="fu">log</span>()</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x =</span> <span class="dv">16</span>,</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> sixteenY <span class="sc">+</span> <span class="fl">0.3</span>,</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"Psychology Teaching"</span>,</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>     <span class="co"># pos= 3,</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>     <span class="at">adj =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>     )</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>thirtyFourY <span class="ot">&lt;-</span> <span class="fu">table</span>(charLength) <span class="sc">|&gt;</span> (\(x){x[<span class="fu">names</span>(x) <span class="sc">==</span> <span class="st">"34"</span>]})() <span class="sc">|&gt;</span> <span class="fu">log</span>()</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="at">x =</span> <span class="dv">34</span>,</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> thirtyFourY <span class="sc">+</span> <span class="dv">1</span>,</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="st">"Needs cleaning"</span>,</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>     <span class="co"># pos= 3,</span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>     <span class="at">adj =</span> <span class="fu">c</span>(<span class="fl">0.5</span>,<span class="fl">0.5</span>)</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>     )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Column-Selection_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>diff_exceptions_filter <span class="ot">&lt;-</span> charLength <span class="sc">&gt;</span> <span class="dv">20</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># table(gradData[diff_exceptions_filter, c("MAJOR_SHORT", "MAJOR")]) |&gt; as.data.frame.matrix() |&gt; View()</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="fu">unique</span>(gradData<span class="sc">$</span>MAJOR_SHORT[diff_exceptions_filter]),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(<span class="st">"Consumer &amp; Communities Studies"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Parks, Recreation, &amp; Tourism"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Health, Society, &amp; Policy"</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Health Promotion &amp; Education"</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kbl</span>(<span class="at">caption =</span> <span class="st">"Mis-matched majors"</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Mis-matched majors</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Consumer &amp; Community Studies</td>
+<td style="text-align: left;">Consumer &amp; Communities Studies</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Parks, Recreation &amp; Tourism</td>
+<td style="text-align: left;">Parks, Recreation, &amp; Tourism</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Health, Society &amp; Policy</td>
+<td style="text-align: left;">Health, Society, &amp; Policy</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Health Promotion &amp; Education Teaching</td>
+<td style="text-align: left;">Health Promotion &amp; Education</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract Award</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>awards <span class="ot">&lt;-</span> <span class="fu">cleanDiff</span>(<span class="at">majr =</span> gradData<span class="sc">$</span>MAJOR, <span class="at">majr_short =</span> gradData<span class="sc">$</span>MAJOR_SHORT) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a> (\(x){ </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gsub</span>(<span class="st">"[^[:alnum:]]"</span>, <span class="st">""</span>, x)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>})()  </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>honors <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(awards <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"HBA"</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"HBS"</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"HBFA"</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"HBU"</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"HBMus"</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"HBSW"</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>),</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="st">"honors"</span>,</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="st">"regular"</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>base_awards <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"H"</span>, <span class="st">""</span>, awards) <span class="sc">|&gt;</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  (\(x){</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">gsub</span>(<span class="st">"^BU$"</span>,<span class="st">"BUS"</span>,x)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  })()</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="co"># let's put these back on</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>gradData<span class="sc">$</span>award <span class="ot">&lt;-</span> base_awards</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>gradData<span class="sc">$</span>honors <span class="ot">&lt;-</span> honors</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(gradData[,<span class="fu">c</span>(<span class="st">"award"</span>,<span class="st">"honors"</span>)]) <span class="sc">|&gt;</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  kableExtra<span class="sc">::</span><span class="fu">kbl</span>(<span class="at">caption =</span> <span class="st">"Basic and Honors degrees"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Basic and Honors degrees</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">honors</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">regular</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">BA</td>
+<td style="text-align: right;">778</td>
+<td style="text-align: right;">23390</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BFA</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">3505</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BMus</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">1024</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BS</td>
+<td style="text-align: right;">2087</td>
+<td style="text-align: right;">94433</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BST</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">31</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BSW</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">1759</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BUS</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">269</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Another variation in awards is the “Teaching” designation. It was awarded 1,322 times (1.04%).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">## TEACHING AWARDS ##</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>gradData<span class="sc">$</span>teach <span class="ot">&lt;-</span> <span class="fu">grepl</span>(<span class="st">"teach"</span>, <span class="fu">tolower</span>(gradData<span class="sc">$</span>MAJOR_LONG))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># unique(gradData$MAJOR_LONG[gradData$teach])</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(gradData[,<span class="fu">c</span>(<span class="st">"award"</span>,<span class="st">"teach"</span>)]) <span class="sc">|&gt;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">caption =</span> <span class="st">"Teaching awards"</span>, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"Non-Teaching"</span>,<span class="st">"Teaching"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Teaching awards</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Non-Teaching</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Teaching</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">BA</td>
+<td style="text-align: right;">23474</td>
+<td style="text-align: right;">694</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BFA</td>
+<td style="text-align: right;">3359</td>
+<td style="text-align: right;">199</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BMus</td>
+<td style="text-align: right;">1051</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BS</td>
+<td style="text-align: right;">96122</td>
+<td style="text-align: right;">398</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BST</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">31</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BSW</td>
+<td style="text-align: right;">1771</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BUS</td>
+<td style="text-align: right;">295</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(gradData[gradData<span class="sc">$</span>teach,<span class="fu">c</span>(<span class="st">"MAJOR_SHORT"</span>)]) <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    (\(x){x[<span class="fu">order</span>(x, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]})() <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kbl</span>(<span class="at">caption =</span> <span class="st">"Teaching by major"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Teaching by major</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Var1</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">English Teaching</td>
+<td style="text-align: right;">254</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">History Teaching</td>
+<td style="text-align: right;">235</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Art Teaching</td>
+<td style="text-align: right;">162</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mathematics Teaching</td>
+<td style="text-align: right;">157</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Spanish Teaching</td>
+<td style="text-align: right;">146</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exercise &amp; Sport Science Teaching</td>
+<td style="text-align: right;">85</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Social Science Composite Teaching</td>
+<td style="text-align: right;">83</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Theatre Teaching</td>
+<td style="text-align: right;">34</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Health Promotion &amp; Education Teaching</td>
+<td style="text-align: right;">31</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Biology Teaching</td>
+<td style="text-align: right;">27</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Earth Science Composite Teaching</td>
+<td style="text-align: right;">23</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Physics Teaching</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Kinesiology Teaching</td>
+<td style="text-align: right;">17</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">French Teaching</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Geography Teaching</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Russian Teaching</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Chemistry Teaching</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dance Teaching</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Communications Composite Teaching</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">German Teaching</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Psychology Teaching</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sociology Teaching</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Anthropology Teaching</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Communication Teaching</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Economics Teaching</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Geology Teaching</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Political Science Teaching</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="low-variance-columns-discarded" class="level2">
+<h2 class="anchored" data-anchor-id="low-variance-columns-discarded">Low Variance Columns Discarded</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## COLUMN VARIANCE ## </span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(skimr)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(gradData, class) <span class="sc">|&gt;</span> <span class="fu">unlist</span>() <span class="sc">|&gt;</span> <span class="fu">table</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+character   logical   numeric   POSIXct    POSIXt 
+       47         1        12         3         3 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># character   logical   numeric   POSIXct    POSIXt </span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#       47         1        12         3         3 </span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>charSkim <span class="ot">&lt;-</span> <span class="fu">skim</span>(gradData[, <span class="fu">sapply</span>(gradData, is.character)])</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># zero-variance character columns</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># No need to query these</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>zv_col <span class="ot">&lt;-</span> charSkim[charSkim<span class="sc">$</span>skim_type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"character"</span>) <span class="sc">&amp;</span> charSkim<span class="sc">$</span>character.n_unique <span class="sc">==</span> <span class="dv">1</span>, </span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  ] <span class="sc">|&gt;</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  (\(x){x[,<span class="st">"skim_variable"</span>][[<span class="dv">1</span>]]})() </span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># &gt; zv_col</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] "DEGREECAREER"            </span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="co"># [2] "ACAD_DEPARTMENT_REG_SUPP"</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co"># [3] "ACAD_DIVISION_REG_SUPP"  </span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="co"># [4] "IPEDLEVEL" </span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="co"># low variance character columns</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co"># defined as &gt;80% mono-value</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>value_proportions <span class="ot">&lt;-</span> gradData[,<span class="fu">sapply</span>(gradData, is.character)] <span class="sc">|&gt;</span> <span class="co">#select character columns</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  (\(x){x[,<span class="sc">-</span><span class="fu">which</span>(<span class="fu">colnames</span>(x) <span class="sc">%in%</span> zv_col )]})() <span class="sc">|&gt;</span> <span class="co"># remove zero variance columns</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>  (\(x){<span class="fu">lapply</span>(x,table)})() <span class="sc">|&gt;</span> <span class="co"># table per character </span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>    (\(x){<span class="fu">lapply</span>(x, <span class="cf">function</span>(x){<span class="fu">as.data.frame</span>(x, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)})})() <span class="sc">|&gt;</span> <span class="co"># convert to data frame</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>  (\(x){<span class="fu">lapply</span>(x, <span class="cf">function</span>(x){x[<span class="fu">order</span>(x[,<span class="st">"Freq"</span>],<span class="at">decreasing =</span> <span class="cn">TRUE</span>),]})})()  <span class="sc">|&gt;</span> <span class="co"># descending order</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  (\(x){<span class="fu">lapply</span>(x, <span class="cf">function</span>(x){ <span class="fu">data.frame</span>(<span class="at">Var1 =</span> x[,<span class="st">"Var1"</span>], <span class="at">prop =</span> <span class="fu">proportions</span>(x[,<span class="st">"Freq"</span>])) })})() <span class="co"># proportions</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>lv_col <span class="ot">&lt;-</span> value_proportions <span class="sc">|&gt;</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>  (\(x){<span class="fu">lapply</span>(x, <span class="cf">function</span>(x){<span class="fu">max</span>(x[,<span class="st">"prop"</span>])})})()  <span class="sc">|&gt;</span> </span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>  (\(x){<span class="fu">lapply</span>(x, <span class="cf">function</span>(x){x<span class="sc">&gt;</span><span class="fl">0.8</span>} )})() <span class="sc">|&gt;</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>() <span class="sc">|&gt;</span></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>  (\(x){x[x]})() <span class="sc">|&gt;</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>value_proportions[lv_col]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$ACAD_DEPARTMENT_TYPE
+                 Var1       prop
+1 Academic Department 0.93787777
+2    Academic Program 0.06212223
+
+$ACAD_DIVISION_TYPE
+                 Var1       prop
+1 Academic Department 0.90602383
+2    Academic Program 0.09397617
+
+$VP_CD
+   Var1      prop
+1 02002 0.8774118
+2 02193 0.1225882
+
+$MATH950
+  Var1       prop
+1    N 0.97816121
+2    Y 0.02183879
+
+$honors
+     Var1       prop
+1 regular 0.97658445
+2  honors 0.02341555</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the problem is that these aren't my final columns.</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># so these "low variance" columns could be the signal I'm looking for.</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># I need to find these columns in ftfData, and the course data  </span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># These are candidates to decline to query, but I'd need to see their distribution on the incoming data.  This is the "outcome" data, as in, these people graduated.  A division type of "program" vs "department" could signal longer to take to graduate from, or have a higher failure rate. </span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># The two type columns should be pretty similar--</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="fu">detSim</span>(gradData<span class="sc">$</span><span class="st">"ACAD_DEPARTMENT_TYPE"</span>,gradData<span class="sc">$</span><span class="st">"ACAD_DIVISION_TYPE"</span>) <span class="co"># 96% similar</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$sim
+[1] 0.9681461
+
+$row
+Academic Department 
+                  1 
+
+$col
+Academic Program 
+               2 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># I'll pick "DIVISION_TYPE" as it has the higher variance.</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>numSkim <span class="ot">&lt;-</span> <span class="fu">skim</span>(gradData[, <span class="fu">sapply</span>(gradData, is.numeric)])</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># View(numSkim)</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>cv <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">sd</span>(x, <span class="at">na.rm=</span><span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fu">abs</span>(<span class="fu">mean</span>(x, <span class="at">na.rm=</span><span class="cn">TRUE</span>))</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>num_var <span class="ot">&lt;-</span> <span class="fu">sapply</span>(gradData[, <span class="fu">sapply</span>(gradData, is.numeric)], cv) <span class="sc">|&gt;</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  (\(x){x[<span class="fu">order</span>(x)]})() <span class="sc">|&gt;</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># &gt; num_var</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="co">#  MAJOR_MIN_UNITS     IPEDSRATEYEAR     IPEDSCOMPYEAR </span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="co">#            0.011             0.027             0.027 </span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co"># MINUNITSREQUIRED           UOFUGPA     DEGREEUOFUGPA </span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co">#            0.058             0.119             0.122 </span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="co">#              AGE      UOFUGPAUNITS ROLLUP_SORT_ORDER </span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="co">#            0.212             0.337             0.347 </span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="co"># NBRTERMSATTENDED            ALT_ID           FA_PELL </span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="co">#            0.412             0.658             2.074 </span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>dateSkim <span class="ot">&lt;-</span> <span class="fu">skim</span>(gradData[,</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(gradData, inherits, <span class="st">"POSIXt"</span>) <span class="sc">|</span> <span class="fu">sapply</span>(gradData, inherits, <span class="st">"POSIXct"</span>) ])</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(gradData<span class="sc">$</span>DEGREEDATE <span class="sc">==</span> gradData<span class="sc">$</span>DEGREEDATE1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># looks like I duplicated DEGREEDATE a column in my query -- I'll double-check and clean that out.</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; length(colnames(gradData))</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">#[1] 63</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; length(unique(colnames(gradData)))</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co">#[1] 62</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>other_col <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IPEDLEVEL"</span>,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"TRANSFERFROMINSTATE"</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IPEDSCOMPYEAR"</span>, </span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IPEDSRATEYEAR"</span>, </span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ALT_ID"</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Zero-variance categorical columns are identified as DEGREECAREER, ACAD_DEPARTMENT_REG_SUPP, ACAD_DIVISION_REG_SUPP, IPEDLEVEL. These have a single value and will not be queried.</p>
+<p>Low-variance categorical columns are identified as ACAD_DEPARTMENT_TYPE, ACAD_DIVISION_TYPE, VP_CD, MATH950, honors. Of these, “ACAD_DEPARTMENT_TYPE” and “ACAD_DIVISION_TYPE” are 96.8% similar, and I will prefer “ACAD_DIVISION_TYPE” over “ACAD_DEPARTMENT_TYPE” as it has higher variation.</p>
+<p>Low-variance numerical columns include MAJOR_MIN_UNITS and MINUNITSREQUIRED, both overwhelmingly at 122 units. These both have a cross variance less than 0.1, and will not be selected.</p>
+</section>
+<section id="other-discarded-columns" class="level2">
+<h2 class="anchored" data-anchor-id="other-discarded-columns">Other Discarded Columns</h2>
+<p>These columns are also discarded:</p>
+<p>ALT_ID as it is an identifier and not descriptive ROLLUP_SORT_ORDER as it appears to be related to data management and is not descriptive</p>
+</section>
+</section>
+<section id="results-detail" class="level1">
+<h1>Results Detail</h1>
+<section id="reference" class="level3">
+<h3 class="anchored" data-anchor-id="reference">Reference</h3>
+<p>Definitions are found in this <a href="https://registrar.utah.edu/_resources/documents/pdf/student-data-warehouse-definitions.pdf">definitions document</a>.</p>
+</section>
+<section id="division" class="level3">
+<h3 class="anchored" data-anchor-id="division">Division</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="do">## DIVISION ## </span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(simList[[<span class="st">"div"</span>]], <span class="cf">function</span>(x) { x[[<span class="st">"sim"</span>]]}) <span class="sc">|&gt;</span> <span class="fu">unlist</span>() <span class="sc">|&gt;</span> (\(x){</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  idents <span class="ot">&lt;-</span>  x[x<span class="sc">==</span><span class="st">"Identical"</span>]</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  numerics <span class="ot">&lt;-</span> x[x<span class="sc">!=</span><span class="st">"Identical"</span>] <span class="sc">|&gt;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.numeric</span>() <span class="sc">|&gt;</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(numerics) <span class="ot">&lt;-</span> <span class="fu">names</span>(x[x<span class="sc">!=</span><span class="st">"Identical"</span>])</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  numerics <span class="ot">&lt;-</span> numerics[<span class="fu">order</span>(numerics, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  idents,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  numerics</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  })()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            ACAD_DIVISION_CD DIVISION       ACAD_DIVISION_CD DIVISION_SHORT 
+                          "Identical"                           "Identical" 
+              DIVISION DIVISION_SHORT        DIVISION_FORMAL DIVISION_SHORT 
+                          "Identical"                           "Identical" 
+           DIVISION_CD DIVISION_SHORT      ACAD_DIVISION_CD DIVISION_FORMAL 
+                          "Identical"                           "Identical" 
+             DIVISION DIVISION_FORMAL           DIVISION_CD DIVISION_FORMAL 
+                          "Identical"                           "Identical" 
+         ACAD_DIVISION_CD DIVISION_CD                  DIVISION DIVISION_CD 
+                          "Identical"                           "Identical" 
+        ACAD_DIVISION_CIP_CD DIVISION   ACAD_DIVISION_CIP_CD DIVISION_SHORT 
+                              "0.986"                               "0.986" 
+ ACAD_DIVISION_CIP_CD DIVISION_FORMAL ACAD_DIVISION_CD ACAD_DIVISION_CIP_CD 
+                              "0.986"                               "0.986" 
+     ACAD_DIVISION_CIP_CD DIVISION_CD 
+                              "0.986" </code></pre>
+</div>
+</div>
+</section>
+<section id="college" class="level3">
+<h3 class="anchored" data-anchor-id="college">College</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="do">## COLLEGE ## </span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(simList[[<span class="st">"college"</span>]], <span class="cf">function</span>(x) { x[[<span class="st">"sim"</span>]]}) <span class="sc">|&gt;</span> <span class="fu">unlist</span>() <span class="sc">|&gt;</span> (\(x){</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  idents <span class="ot">&lt;-</span>  x[x<span class="sc">==</span><span class="st">"Identical"</span>]</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  numerics <span class="ot">&lt;-</span> x[x<span class="sc">!=</span><span class="st">"Identical"</span>] <span class="sc">|&gt;</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.numeric</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(numerics) <span class="ot">&lt;-</span> <span class="fu">names</span>(x[x<span class="sc">!=</span><span class="st">"Identical"</span>])</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  numerics <span class="ot">&lt;-</span> numerics[<span class="fu">order</span>(numerics, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  idents,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  numerics</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  })()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> ACAD_COLLEGE_CIP_CD COLLEGE_SHORT           COLLEGE_CD COLLEGE_SHORT 
+                       "Identical"                        "Identical" 
+    ACAD_COLLEGE_CIP_CD COLLEGE_CD       COLLEGE_SHORT SNAP_MAJORCOLL 
+                       "Identical"                            "0.984" 
+ACAD_COLLEGE_CIP_CD SNAP_MAJORCOLL          COLLEGE_CD SNAP_MAJORCOLL 
+                           "0.984"                            "0.984" </code></pre>
+</div>
+</div>
+</section>
+<section id="department" class="level3">
+<h3 class="anchored" data-anchor-id="department">Department</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="do">## DEPT ## </span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(simList[[<span class="st">"dept"</span>]], <span class="cf">function</span>(x) { x[[<span class="st">"sim"</span>]]}) <span class="sc">|&gt;</span> <span class="fu">unlist</span>() <span class="sc">|&gt;</span> (\(x){</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  idents <span class="ot">&lt;-</span>  x[x<span class="sc">==</span><span class="st">"Identical"</span>]</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  numerics <span class="ot">&lt;-</span> x[x<span class="sc">!=</span><span class="st">"Identical"</span>] <span class="sc">|&gt;</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.numeric</span>() <span class="sc">|&gt;</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(numerics) <span class="ot">&lt;-</span> <span class="fu">names</span>(x[x<span class="sc">!=</span><span class="st">"Identical"</span>])</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  numerics <span class="ot">&lt;-</span> numerics[<span class="fu">order</span>(numerics, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  idents,</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  numerics</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  })()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            ACAD_DEPARTMENT_CD DEPARTMENT 
+                              "Identical" 
+      ACAD_DEPARTMENT_CD DEPARTMENT_SHORT 
+                              "Identical" 
+              DEPARTMENT DEPARTMENT_SHORT 
+                              "Identical" 
+       DEPARTMENT_FORMAL DEPARTMENT_SHORT 
+                              "Identical" 
+           DEPARTMENT_CD DEPARTMENT_SHORT 
+                              "Identical" 
+     ACAD_DEPARTMENT_CD DEPARTMENT_FORMAL 
+                              "Identical" 
+             DEPARTMENT DEPARTMENT_FORMAL 
+                              "Identical" 
+          DEPARTMENT_CD DEPARTMENT_FORMAL 
+                              "Identical" 
+         ACAD_DEPARTMENT_CD DEPARTMENT_CD 
+                              "Identical" 
+                 DEPARTMENT DEPARTMENT_CD 
+                              "Identical" 
+        ACAD_DEPARTMENT_CIP_CD DEPARTMENT 
+                                  "0.986" 
+  ACAD_DEPARTMENT_CIP_CD DEPARTMENT_SHORT 
+                                  "0.986" 
+ ACAD_DEPARTMENT_CIP_CD DEPARTMENT_FORMAL 
+                                  "0.986" 
+ACAD_DEPARTMENT_CD ACAD_DEPARTMENT_CIP_CD 
+                                  "0.986" 
+     ACAD_DEPARTMENT_CIP_CD DEPARTMENT_CD 
+                                  "0.986" 
+     ACAD_DEPARTMENT_CD MAJOR_ACAD_ORG_CD 
+                                  "0.977" 
+             DEPARTMENT MAJOR_ACAD_ORG_CD 
+                                  "0.977" 
+       DEPARTMENT_SHORT MAJOR_ACAD_ORG_CD 
+                                  "0.977" 
+      DEPARTMENT_FORMAL MAJOR_ACAD_ORG_CD 
+                                  "0.977" 
+          DEPARTMENT_CD MAJOR_ACAD_ORG_CD 
+                                  "0.977" 
+ ACAD_DEPARTMENT_CIP_CD MAJOR_ACAD_ORG_CD 
+                                  "0.963" 
+         MAJOR_ACAD_ORG_CD SNAP_MAJORDEPT 
+                                  "0.882" 
+        ACAD_DEPARTMENT_CD SNAP_MAJORDEPT 
+                                  "0.872" 
+                DEPARTMENT SNAP_MAJORDEPT 
+                                  "0.872" 
+          DEPARTMENT_SHORT SNAP_MAJORDEPT 
+                                  "0.872" 
+         DEPARTMENT_FORMAL SNAP_MAJORDEPT 
+                                  "0.872" 
+             DEPARTMENT_CD SNAP_MAJORDEPT 
+                                  "0.872" 
+    ACAD_DEPARTMENT_CIP_CD SNAP_MAJORDEPT 
+                                  "0.864" </code></pre>
+</div>
+</div>
+</section>
+<section id="major" class="level3">
+<h3 class="anchored" data-anchor-id="major">Major</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(simList[[<span class="st">"major"</span>]], <span class="cf">function</span>(x) { x[[<span class="st">"sim"</span>]]})  <span class="sc">|&gt;</span> <span class="fu">unlist</span>() <span class="sc">|&gt;</span> (\(x){</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  idents <span class="ot">&lt;-</span>  x[x<span class="sc">==</span><span class="st">"Identical"</span>]</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  numerics <span class="ot">&lt;-</span> x[x<span class="sc">!=</span><span class="st">"Identical"</span>] <span class="sc">|&gt;</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.numeric</span>() <span class="sc">|&gt;</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(<span class="dv">3</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(numerics) <span class="ot">&lt;-</span> <span class="fu">names</span>(x[x<span class="sc">!=</span><span class="st">"Identical"</span>])</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  numerics <span class="ot">&lt;-</span> numerics[<span class="fu">order</span>(numerics, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  idents,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  numerics</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  })()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          MAJOR_CD SNAP_MAJORCDE          MAJOR_GROUP MAJOR_SHORT 
+                     "Identical"                          "0.999" 
+                  MAJOR MAJOR_CD              MAJOR SNAP_MAJORCDE 
+                         "0.997"                          "0.997" 
+                MAJOR MAJOR_LONG              MAJOR_CD MAJOR_LONG 
+                         "0.977"                          "0.975" 
+        MAJOR_LONG SNAP_MAJORCDE               CIP_CD MAJOR_SHORT 
+                         "0.975"                          "0.958" 
+              CIP_CD MAJOR_GROUP             MAJOR_SHORT SNAP_CIP 
+                         "0.958"                          "0.929" 
+            MAJOR_GROUP SNAP_CIP                  CIP_CD SNAP_CIP 
+                         "0.928"                           "0.92" 
+          MAJOR_LONG MAJOR_SHORT           MAJOR_GROUP MAJOR_LONG 
+                         "0.903"                          "0.902" 
+               MAJOR MAJOR_SHORT                MAJOR MAJOR_GROUP 
+                         "0.884"                          "0.883" 
+            MAJOR_CD MAJOR_SHORT        MAJOR_SHORT SNAP_MAJORCDE 
+                         "0.881"                          "0.881" 
+            MAJOR_CD MAJOR_GROUP        MAJOR_GROUP SNAP_MAJORCDE 
+                          "0.88"                           "0.88" 
+        CIP_CD MAJOR_ACAD_ORG_CD                CIP_CD MAJOR_LONG 
+                         "0.867"                          "0.864" 
+             MAJOR_LONG SNAP_CIP    MAJOR_ACAD_ORG_CD MAJOR_GROUP 
+                         "0.852"                           "0.85" 
+   MAJOR_ACAD_ORG_CD MAJOR_SHORT                     CIP_CD MAJOR 
+                         "0.848"                          "0.845" 
+                 CIP_CD MAJOR_CD             CIP_CD SNAP_MAJORCDE 
+                         "0.842"                          "0.842" 
+                  MAJOR SNAP_CIP           SNAP_CIP SNAP_MAJORCDE 
+                         "0.833"                           "0.83" 
+               MAJOR_CD SNAP_CIP       MAJOR_ACAD_ORG_CD SNAP_CIP 
+                          "0.83"                          "0.821" 
+    MAJOR_ACAD_ORG_CD MAJOR_LONG          MAJOR MAJOR_ACAD_ORG_CD 
+                          "0.77"                          "0.752" 
+      MAJOR_ACAD_ORG_CD MAJOR_CD  MAJOR_ACAD_ORG_CD SNAP_MAJORCDE 
+                          "0.75"                           "0.75" 
+         MAJOR_CD SNAP_MAJORNAME     SNAP_MAJORCDE SNAP_MAJORNAME 
+                         "0.681"                          "0.681" 
+            MAJOR SNAP_MAJORNAME        MAJOR_LONG SNAP_MAJORNAME 
+                         "0.679"                          "0.663" 
+      MAJOR_SHORT SNAP_MAJORNAME          SNAP_CIP SNAP_MAJORNAME 
+                         "0.585"                          "0.585" 
+      MAJOR_GROUP SNAP_MAJORNAME            CIP_CD SNAP_MAJORNAME 
+                         "0.584"                          "0.557" 
+MAJOR_ACAD_ORG_CD SNAP_MAJORNAME 
+                         "0.476" </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="results-1" class="level1">
+<h1>Results</h1>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

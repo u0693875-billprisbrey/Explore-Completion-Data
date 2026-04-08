@@ -34,6 +34,7 @@ stop("End query here")
 
 }
 
+queryStart <- Sys.time()
 gradData <- dbGetQuery(con.ds, "
                        SELECT
                           EMPLID,
@@ -41,7 +42,7 @@ gradData <- dbGetQuery(con.ds, "
                           FULLNAME,
                           SEX,
                           ETHNICITY,
-                          DEGREECAREER,
+                          
                           DEGREETYPE,
                           DEGREENAME,
                           DEGREETERM,
@@ -49,57 +50,48 @@ gradData <- dbGetQuery(con.ds, "
                           MAJOR_CD,
                           MAJOR,
                           MAJOR_SHORT,
-                          MAJOR_LONG,
-                          MAJOR_GROUP,
-                          CIP_CD,
                           
-                          MAJOR_ACAD_ORG_CD,
+                          
+                          
+                          
                           
                           COLLEGE_SHORT,
                           
-                          ACAD_COLLEGE_CIP_CD,
-                          ACAD_DEPARTMENT_CD,
-                          DEPARTMENT,
-                          DEPARTMENT_SHORT,
-                          DEPARTMENT_FORMAL,
-                          ACAD_DEPARTMENT_REG_SUPP,
-                          ACAD_DEPARTMENT_TYPE,
-                          ACAD_DEPARTMENT_CIP_CD,
-                          ACAD_DIVISION_CD,
-                          DIVISION,
+                          
+                          
+                          ACAD_DEPARTMENT_CD, 
+                          
+                          
+                          
+                          
+                          
+                          
                           DIVISION_SHORT,
-                          DIVISION_FORMAL,
-                          ACAD_DIVISION_REG_SUPP,
+                          
+                          
                           ACAD_DIVISION_TYPE,
-                          ACAD_DIVISION_CIP_CD,
+                          
                           VP_CD,
-                          COLLEGE_CD,
-                          DEPARTMENT_CD,
-                          DIVISION_CD,
-                          IPEDLEVEL,
+                          
+                          
+                          
+                          
                           TRANSFERFROMINSTATE,
                           MATH950,
                           FIRST_GEN_STATUS_CD,
                           FIRST_GEN_STATUS,
-                          SNAP_MAJORCDE,
-                          SNAP_MAJORNAME,
-                          SNAP_MAJORCOLL,
-                          SNAP_MAJORDEPT,
-                          SNAP_CIP,
+                          
                           IPEDSCOMPYEAR,
                           IPEDSRATEYEAR,
-                          ALT_ID,
+                          
                           AGE,
                           FA_PELL,
                           NBRTERMSATTENDED,
-                          MAJOR_MIN_UNITS,
-                          ROLLUP_SORT_ORDER,
-                          MINUNITSREQUIRED,
+                          
                           UOFUGPAUNITS,
                           UOFUGPA,
                           DEGREEUOFUGPA,
-                          BIRTHDATE,
-                          DEGREEDATE
+                          BIRTHDATE
                       FROM
                       OBIA.COMBINED_DEGREE_V
                       WHERE
@@ -112,10 +104,46 @@ queryEnd <- Sys.time()
 
 print("Query complete")      
 
-saveRDS(gradData, here::here("Data", "gradData_early_pull.rds"))
+saveRDS(gradData, here::here("Data", "gradData_7Apr26.rds"))
 
 
 if(FALSE) { # removed colums and old query
+
+#  ACAD_DIVISION_CD,
+#  DIVISION_CD,
+#  DIVISION,
+#  DIVISION_FORMAL,
+#  ACAD_DIVISION_CIP_CD,
+#  ACAD_COLLEGE_CIP_CD,
+#  COLLEGE_CD,
+#  SNAP_MAJORCOLL,
+#  DEPARTMENT,
+#  DEPARTMENT_SHORT,
+#  DEPARTMENT_FORMAL,
+#  DEPARTMENT_CD,
+#  ACAD_DEPARTMENT_CIP_CD,
+#  MAJOR_ACAD_ORG_CD,
+#  SNAP_MAJORDEPT,
+#  MAJOR_LONG,
+#  MAJOR_GROUP,
+#  CIP_CD,
+#  SNAP_MAJORCDE,
+#  SNAP_MAJORNAME,
+#  SNAP_CIP,
+  
+#  DEGREECAREER,
+#  ACAD_DIVISION_REG_SUPP,
+#  ACAD_DEPARTMENT_REG_SUPP,
+  
+#  IPEDLEVEL,
+  
+#  ACAD_DEPARTMENT_TYPE,
+  
+#  MAJOR_MIN_UNITS,
+#  ROLLUP_SORT_ORDER,
+#  MINUNITSREQUIRED,
+  
+#  ALT_ID,
   
 # DEGREELEVEL,
 
