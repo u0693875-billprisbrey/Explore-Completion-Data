@@ -1,7 +1,17 @@
 ---
-title: "Column Selection"
-format: html
-editor: visual
+title: "Column Selection from COMBINED_DEGREE_V"
+format: 
+  html: default
+  gfm: default
+  pdf: default
+  docx: default 
+editor: source
+execute: 
+  warning: false  
+knitr: 
+  opts_chunk: 
+    fig.height: 5
+    fig.width: 7
 ---
 
 **PURPOSE:**  The purpose of this report is to examine and select columns from COMBINED_DEGREE_V table for further use and modeling.  It examines columns for similarity (such as "MAJOR" and "MAJOR_CD") and variance. 
@@ -20,6 +30,7 @@ Columns were initially selected from a summary report of the entire database.  T
 gradData <- readRDS(here::here("Data", "gradData_early_pull.rds"))
 
 ```
+
 
 ```{r}
 
@@ -228,7 +239,7 @@ The column "MAJOR_CD" may be convenient for labels on plots.
 
 For clarity and ease of interpretation, I will select "MAJOR_SHORT", "MAJOR" (to extract the degree awarded), and "MAJOR_CD" (for plot labels) and abandon the rest.  
 
-```{r warning = FALSE}
+```{r}
 
 ## MAJOR ## 
 
@@ -251,7 +262,8 @@ mean_val <- mean_val |>
 ```
 
 
-```{r include=FALSE}
+```{r}
+#| include: false
 
 plot(mean_val,
        las = 1,
@@ -292,7 +304,7 @@ text(x = length(mean_val),
 Comparison of MAJOR_SHORT and MAJOR, with some cleaning and manipulation, extracts the base degree awarded and whether or not an honors degree was awarded.  
 
 
-```{r warning=FALSE}
+```{r}
 
 # Difference between MAJOR and MAJOR_SHORT 
 
@@ -542,10 +554,9 @@ Low-variance numerical columns include MAJOR_MIN_UNITS and MINUNITSREQUIRED, bot
 
 These columns are also discarded:  
 
-  ALT_ID as it is an identifier and not descriptive 
-  ROLLUP_SORT_ORDER as it appears to be related to data management and is not descriptive. 
+  * ALT_ID as it is an identifier and not descriptive   
+  * ROLLUP_SORT_ORDER as it appears to be related to data management and is not descriptive.  
   
-
 
 # Results Detail 
 

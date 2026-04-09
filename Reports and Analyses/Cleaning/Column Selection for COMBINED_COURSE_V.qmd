@@ -1,0 +1,573 @@
+---
+title: "Column Selection from COMBINED_COURSE_V"
+format: 
+  html: default
+  gfm: default
+  pdf: default
+  docx: default 
+editor: source
+execute: 
+  warning: false  
+knitr: 
+  opts_chunk: 
+    fig.height: 5
+    fig.width: 7
+---
+
+**PURPOSE:**  The purpose of this report is to examine and select columns from COMBINED_COURSE_V table for further use and modeling.  It examines columns for similarity and variance, and compares with COMBINED_DEGREE_V.
+
+
+```{r}
+
+##########  
+## LOAD ##  
+########## 
+
+courseData <- readRDS(here::here("Data", "courseData_8Apr26_graduated_ftf.rds"))
+
+termExtract_Filter <- courseData$TERMEXTRACT %in% c("E","S")
+courseData <- courseData[termExtract_Filter,] # apply filter
+
+```
+
+
+```{r}
+
+###############
+## FUNCTIONS ##
+###############
+
+library(kableExtra)
+
+detSim <- function(col1,col2) {
+
+  # This function "determines similarity" between columns to determine if the columns are redundant or in other words if they are different labels for the same thing.  For example, "COLLEGE" and "COLLEGE_SHORT" should be completely redundant.  However, "COLLEGE" and "ACAD_COLLEGE_CIP_CD" might not be redundant.  
+    
+  testTable <- table(col1,col2) |>
+    as.data.frame.matrix()
+  
+  # Every row and every column has exactly one non-zero cell
+  identicalTest <- 
+    all(apply(testTable, 1, function(x) sum(x > 0) == 1)) &&
+    all(apply(testTable, 2, function(x) sum(x > 0) == 1))
+  
+  if(identicalTest) {return(
+    list(sim = 1.000, row = NA, col = NA))
+    }
+  
+  # return row and columns that are off 
+  
+  offRow <- apply(testTable, 1, function(x) sum(x > 0)) |> (\(x){which(x>1)})()
+  offCol <- apply(testTable, 2, function(x) sum(x > 0)) |> (\(x){which(x>1)})()
+  
+  # percentage difference
+  row_max_sum <- sum(apply(testTable, 1, max))
+  col_max_sum <- sum(apply(testTable, 2, max))
+  row_sim <- row_max_sum / sum(testTable)
+  col_sim <- col_max_sum / sum(testTable)
+  
+  return(list(sim = min(row_sim, col_sim), row = offRow, col = offCol))
+}
+
+
+createCombinatorics <- function(vec) {
+
+  # This function receives a vector of column names and then produces a grid of every dual combination.  It will be used to calculate the similarity
+    
+  full_grid <- expand.grid(vec,vec,stringsAsFactors = FALSE)
+  reduced_grid <- full_grid[full_grid$Var1 < full_grid$Var2,]
+  
+  return(reduced_grid)
+  
+}
+
+
+family_detSim <- function(fam, data){
+  
+  # where fam is a vector of column names chosen for their suspected similarity
+  # where data is the dataframe where the columns occur
+  
+sim_list <- fam |>
+createCombinatorics() |>
+  (\(comb){
+    setNames(
+  lapply(1:nrow(comb),
+         function(y){
+           detSim(data[, comb[y,"Var1"]], data[,comb[y,"Var2"]])
+         }
+         ),
+  paste(comb[,"Var1"],comb[,"Var2"])
+    )
+  })()
+
+  return(sim_list)
+
+}
+
+## SIMILARITY SUMMARY ## 
+
+sumSim <- function(y){
+  
+  # where "y" is output of family_detSim
+  
+  lapply(y, function(x) { x[["sim"]]} ) |> 
+    unlist() |>
+  (\(x){
+  
+  idents <-  x[x=="Identical"]
+  numerics <- x[x!="Identical"] |>
+    as.numeric() |>
+    round(3)
+  names(numerics) <- names(x[x!="Identical"])
+  
+  numerics <- numerics[order(numerics, decreasing = TRUE)]
+  
+  c(
+  idents,
+  numerics
+  )
+  
+  })()
+
+}  
+  
+meanSim <- function(sumSim_output, family = NA){
+  
+  if(any(is.na(family))){ # extract unique values
+    
+    family <- names(sumSim_output) |>
+      strsplit(" ") |> 
+      unlist() |>
+      unique()
+    
+    }
+  
+  
+mean_val <- lapply(family, function(fam_val){
+ 
+  sumSim_output[grepl(fam_val, names(sumSim_output))] |>
+    mean(na.rm = TRUE)
+   
+})
+names(mean_val) <- family  
+
+mean_val <- mean_val |>
+  unlist() |>
+  (\(x){x[order(x, decreasing = TRUE)]})()
+
+return(mean_val) 
+ 
+}
+
+
+```
+
+```{r}
+
+############
+## SAMPLE ##
+############
+
+# take a random sample (by EMPLID) to improve process time.
+
+uniqueEmplid <- unique(courseData$EMPLID)
+
+sample_list <- lapply(c(0.05,0.1,0.33,0.5), function(x) {
+  
+  sample(uniqueEmplid, x*length(uniqueEmplid))
+  
+})
+names(sample_list) <- c("sample5", "sample10", "sample33", "sample50")
+
+index_list <- lapply(sample_list, function(x){
+  
+  courseData$EMPLID %in% x
+  
+  
+})
+
+
+```
+
+
+```{r}
+
+#############
+## COLUMNS ##
+#############
+
+# > colnames(courseData)
+keepColumns <- c(
+  [1] "TERM"                        
+  # [2] "ACADYR" # redundant to term                      
+  # [3] "TERMEXTRACT"                 
+  # [4] "MAX_SNAP"    # zero variance                
+  [5] "EOTDATE"                     
+  # [6] "CENSUSDATE"  # not relevant; prefer EOTDATE              
+  [7] "EMPLID"                      
+  # [8] "ALT_ID"                      
+  # [9] "FULLNAME"      # redundant                
+ [10] "STUDENTCAREER"  # What is this ???               
+ [11] "SUBJECT_CD"                  
+ [12] "SUBJECT_NAME"                
+ [13] "SUBJECT_LONG"                
+ [14] "SUBJECT_ACAD_ORG_CD"         
+ [15] "CATNBR"                      
+ [16] "CATNBR2"                     
+ [17] "SECTION"                     
+ [18] "TITLE"                       
+ [19] "UNITS"                       
+ [20] "GRADE"                       
+ [21] "INSTEMPLID"                  
+ [22] "INSTNAME"                    
+# [23] "CLASSNBR"    # too granular                  
+ [24] "OFFERINGNBR"                 
+ [25] "SESSIONCODE"                  
+ [26] "COURSECAREER"   # "STUDENTCAREER" ?             
+ [27] "SCHEDFLAG"                   
+ [28] "WAUTOENRL"                   
+ [29] "AUTOENROLL"                  
+ [30] "COMPONENT"                   
+ [31] "GENED"                       
+ [32] "VARCREDIT"                   
+ [33] "CONTRACT"                    
+ [34] "DIRECTPAY"                   
+ [35] "CORRESPONDENCE"              
+ [36] "ONLINECOURSE"                
+ [37] "IVC"                         
+ [38] "IVC_HYBRID"                  
+ [39] "COURSE_MODALITY"             
+ [40] "INSTRUCTION_MODE"            
+ [41] "TELECOURSE"                  
+ [42] "STUDYABROAD"                 
+ [43] "EDNET"                       
+ [44] "HYBRIDCOURSE"                
+ [45] "COURSE_LEVEL"                
+ [46] "USHE_COURSE_LEVEL"           
+# [47] "FISCAL_YEAR_OF_STARTDT" # redundant to TERM     
+ [48] "VP"                          
+ [49] "VP_SHORT"                    
+ [50] "VP_FORMAL"                   
+ [51] "ACAD_COLLEGE_CD"             
+ [52] "COLLEGE"                     
+ [53] "COLLEGE_SHORT"               
+ [54] "COLLEGE_FORMAL"              
+ [55] "ACAD_COLLEGE_REG_SUPP"       
+ [56] "ACAD_COLLEGE_TYPE"           
+ [57] "ACAD_COLLEGE_CIP_CD"         
+ [58] "ACAD_DEPARTMENT_CD"          
+ [59] "DEPARTMENT"                  
+ [60] "DEPARTMENT_SHORT"            
+ [61] "DEPARTMENT_FORMAL"           
+ [62] "ACAD_DEPARTMENT_REG_SUPP"    
+ [63] "ACAD_DEPARTMENT_TYPE"        
+ [64] "ACAD_DEPARTMENT_CIP_CD"      
+ [65] "ACAD_DIVISION_CD"            
+ [66] "DIVISION"                    
+ [67] "DIVISION_SHORT"              
+ [68] "DIVISION_FORMAL"             
+ [69] "ACAD_DIVISION_REG_SUPP"      
+ [70] "ACAD_DIVISION_TYPE"          
+ [71] "ACAD_DIVISION_CIP_CD"        
+ [72] "VP_CD"                       
+ [73] "COLLEGE_CD"                  
+ [74] "DEPARTMENT_CD"               
+ [75] "DIVISION_CD"                 
+ # [76] "ROLLUP_SORT_ORDER" # not relevant           
+ [77] "PS_ACAD_ORG"                 
+ [78] "PS_ACAD_GROUP"               
+ [79] "CAMPUS"                      
+ [80] "COURSE_CAMPUS"               
+ [81] "USHE_SITE_TYPE_CD"           
+ [82] "USHE_SITE_TYPE"              
+ [83] "ONOFFCAMPUS"                 
+ [84] "COURSELOCATION"              
+ [85] "CONTACTMINUTES"              
+ [86] "TEAMTAUGHT"                  
+ [87] "XLIST"                       
+ [88] "BEGTIME1"                    
+ [89] "BEGTIME2"                    
+ [90] "BEGTIME3"                    
+ [91] "DAYS1"                       
+ [92] "DAYS2"                       
+ [93] "DAYS3"                       
+ [94] "ENDTIME1"                    
+ [95] "ENDTIME2"                    
+ [96] "ENDTIME3"                    
+ [97] "CLASSLOC1"                   
+ [98] "CLASSLOC2"                   
+ [99] "CLASSLOC3"                   
+[100] "CLASSLOCBUILDNAME1"          
+[101] "CLASSLOCBUILDROOM1"          
+[102] "CLASSLOCBUILDNAME2"          
+[103] "CLASSLOCBUILDROOM2"          
+[104] "CLASSLOCBUILDNAME3"          
+[105] "CLASSLOCBUILDROOM3"          
+# [106] "STARTDT" # redundant to term                    
+# [107] "ENDDT"   # redundant to term                    
+[108] "BUDGETCODE"                  
+[109] "LINEITEM"                    
+[110] "SERVICELEARNING"             
+[111] "GRADEGPA"                    
+# [112] "XLIST_ID"  # prefer EMPLID                  
+# [113] "COMBINEDID"  # prefer EMPLID                
+# [114] "USHE_ACADYR" # redundant to term                
+# [115] "USHE_TERM"   # redundant to term                
+# [116] "TERM2"       # redundant to term                
+#  [117] "ORG_EFFDT" # # redundant to term                   
+[118] "CLASSENROLLMENTCAPACITY"     
+[119] "ROOM_MAX_1"                  
+[120] "ROOM_MAX_2"                  
+[121] "ROOM_MAX_3"                  
+[122] "TERM_NBR"                    
+[123] "CLASS_ATTR_LIST"             
+[124] "EXCLUDE_BUDGET_SCH"          
+# [125] "SPR_CORRECTION_NOT_USHE_FLAG" # sounds irrelevant
+# [126] "Section Divider: OLD"        # sounds irrelevant
+[127] "SUBJECTCOLL"                 
+[128] "SUBJECT"
+)
+
+```
+
+```{r}
+
+#####################
+## COLUMN FAMILIES ##
+#####################
+
+# columns that sound like they are similar
+
+subjectFamily <- c(
+  "SUBJECT_CD",                  
+  "SUBJECT_NAME",                
+  "SUBJECT_LONG",                
+  "SUBJECT_ACAD_ORG_CD",
+  "SUBJECTCOLL",                 
+  "SUBJECT"
+  )
+
+catFamily <- c(
+  "CATNBR",
+  "CATNBR2"
+)
+
+sectionFamily <- c(
+  "SECTION",
+  "OFFERINGNBR",                 
+  "SESSIONCODE" 
+)
+
+careerFamily <- c(
+  "STUDENTCAREER",
+  "COURSECAREER"
+)
+
+enrollFamily <- c(
+ "WAUTOENRL",                   
+ "AUTOENROLL"  
+)
+
+levelFamily <-c(
+ "COURSE_LEVEL",                
+ "USHE_COURSE_LEVEL" 
+)
+
+vpFamily <- c(
+ "VP",                          
+ "VP_SHORT",                    
+ "VP_FORMAL",
+ "VP_CD" 
+)
+
+collegeFamily <- c(
+  "ACAD_COLLEGE_CD",             
+  "COLLEGE",                     
+  "COLLEGE_SHORT",               
+  "COLLEGE_FORMAL",              
+  "ACAD_COLLEGE_REG_SUPP",       
+  "ACAD_COLLEGE_TYPE",           
+  "ACAD_COLLEGE_CIP_CD",
+  "COLLEGE_CD",
+  "SUBJECTCOLL",                 
+  "SUBJECT"
+)
+
+deptFamily <- c(
+ "ACAD_DEPARTMENT_CD",          
+ "DEPARTMENT",                  
+ "DEPARTMENT_SHORT",            
+ "DEPARTMENT_FORMAL",           
+ "ACAD_DEPARTMENT_REG_SUPP",    
+ "ACAD_DEPARTMENT_TYPE",        
+ "ACAD_DEPARTMENT_CIP_CD",
+ "DEPARTMENT_CD"
+)
+
+divFamily <- c(
+  "ACAD_DIVISION_CD",            
+  "DIVISION",                    
+  "DIVISION_SHORT",              
+  "DIVISION_FORMAL",             
+  "ACAD_DIVISION_REG_SUPP",      
+  "ACAD_DIVISION_TYPE",          
+  "ACAD_DIVISION_CIP_CD",
+  "DIVISION_CD"
+)
+
+psFamily <- c(
+  "PS_ACAD_ORG",                 
+  "PS_ACAD_GROUP"
+)
+
+siteFamily <- c(
+   "CAMPUS",                      
+  "COURSE_CAMPUS",               
+  "USHE_SITE_TYPE_CD",           
+  "USHE_SITE_TYPE",              
+  "ONOFFCAMPUS",                 
+  "COURSELOCATION"              
+)
+
+begFamily <- c(
+  "BEGTIME1",                    
+  "BEGTIME2",                    
+  "BEGTIME3"
+)
+
+dayFamily <- c(
+ "DAYS1",                       
+ "DAYS2",                       
+ "DAYS3"
+)
+
+endFamily <- c(
+ "ENDTIME1",                    
+ "ENDTIME2",                    
+ "ENDTIME3"
+)
+
+classLocFamily <- c(
+  "CLASSLOC1",                   
+  "CLASSLOC2",                   
+  "CLASSLOC3",                   
+  "CLASSLOCBUILDNAME1",          
+  "CLASSLOCBUILDROOM1",          
+  "CLASSLOCBUILDNAME2",          
+  "CLASSLOCBUILDROOM2",          
+  "CLASSLOCBUILDNAME3",          
+  "CLASSLOCBUILDROOM3"        
+)
+
+roomMaxFamily <- c(
+ "ROOM_MAX_1",                  
+ "ROOM_MAX_2",                  
+ "ROOM_MAX_3"
+)
+
+```
+
+```{r}
+
+## CALCULATE SIMILARITY ##
+
+startTime <- Sys.time()
+simList50 <- lapply(list(
+  subject = subjectFamily,
+  cat = catFamily,
+  section = sectionFamily,
+  career = careerFamily,
+  enroll = enrollFamily,
+  level = levelFamily,
+  vp = vpFamily,
+  
+  div=divFamily,
+  college =collegeFamily,
+  dept = deptFamily,
+  
+  ps = psFamily,
+  site = siteFamily,
+  beg = begFamily,
+  day = dayFamily,
+  
+  end = endFamily,
+  classLoc = classLocFamily,
+  room = roomMaxFamily
+  
+            ),
+       family_detSim, data = courseData[index_list[["sample50"]],])
+endTime <- Sys.time()
+
+print(endTime - startTime)
+
+```
+
+```{r}
+
+simList50_summary <- lapply(simList50, function(x){
+  
+  sumSim(x)
+  
+})
+
+simList50_mean <- lapply(simList50_summary, function(x){
+  
+  meanSim(x)
+  
+})
+
+```
+
+# Results
+
+```{r}
+
+## REDUNDANCY RESULTS ## 
+
+redundancy_results_list <- list(
+  subject = data.frame(results = simList50_mean[["subject"]], keep = c(F,F,T,F,F,T)),
+  cat = data.frame(results = simList50_mean[["cat"]], keep = c(T,F)),
+  section = data.frame(results = simList50_mean[["section"]], keep = c(T,F,T)),
+  career = data.frame(results = simList50_mean[["career"]], keep = c(F,T)),
+  enroll = data.frame(results = simList50_mean[["enroll"]], keep = c(T,F)),
+  level = data.frame(results = simList50_mean[["level"]], keep = c(T,T)),
+  vp = data.frame(results = simList50_mean[["vp"]], keep = c(F,F,F,T)),
+  
+  div=data.frame(results = simList50_mean[["div"]], keep = c(T,F,F,F,F,T,T,T)),
+  college =data.frame(results = simList50_mean[["college"]], keep = c(T,F,F,F,F,F,F,T,T,T)),
+  dept = data.frame(results = simList50_mean[["dept"]], keep = c(T,F,F,F,F,F,T,T)),
+  
+  ps = data.frame(results = simList50_mean[["ps"]], keep = c(T,F)),
+  site = data.frame(results = simList50_mean[["site"]], keep = c(T,F,F,F,F,F)),
+  beg = data.frame(results = simList50_mean[["beg"]], keep = c(T,T,T)),
+  day = data.frame(results = simList50_mean[["day"]], keep = c(T,T,T)),
+  end = data.frame(results = simList50_mean[["end"]], keep = c(T,T,T)),
+  classLoc = data.frame(results = simList50_mean[["classLoc"]], keep = c(T,T,T,T,T,T,T,T,T)),
+  room = data.frame(results = simList50_mean[["room"]], keep = c(T,T,T)) 
+)
+
+redundancy_results_frame <- do.call(rbind, redundancy_results_list)
+# rownames(result) <- gsub("^.*\\.", "", rownames(result))
+
+# Now I'll use that, and the hand-selected columns removed,
+# and then do the variance test on the remaining columns
+
+```
+
+
+
+
+
+
+
+# Results Detail
+
+```{r}
+
+results_list
+
+simList50_summary
+
+simList50_mean
+
+```

@@ -1,0 +1,76 @@
+Notes and musings
+4.8.2026
+
+Is this a simple survival model?  
+  Can I simply see who makes it through 4 or 5 years?
+  Does a survival model work as credit chunks?  
+  
+Do I have "leaks from the future" or over-written history?  
+  Can I find the major they initially declared? 
+  Do I have information on a change in major?
+  Or can I infer it from classes taken?
+  
+How to summarize the course information?
+  Number of credits taken in different departments?
+  Total departments credits taken from?
+  Mean number of credits per term?
+  GPA per term? 
+  GPA per department?
+  In/Out of Major?  
+  Level of course?  
+  
+Pushing people to take math in the first semester --
+  A result mistaken for a cause
+      Handing out Eagle Scout awards doesn't make better citizens; 
+         it's that better citizens earn Eagle Scout awards (!)  
+  People have learned to "game" the system once they knew what they were being measured on  
+  It's that people who do better in math have better academic ability, and it reflects in their initial math course
+  The U shouldn't become a higher ed scam -- extracting another year of debt out of people --
+      but should evict them early (don't you think?)
+  In short, bad causal inference!     
+      
+Can I find out if someone switched majors?
+  Transferred?
+
+I should pull in their home information:  rural/urban, and distance from the U  
+
+I'd like to find laggards -- folks who have enough credit to graduate but linger on.
+
+Is a high school diploma worthless?  Is a college degree the new high school diploma?
+Is a master's degree the new college degree?  
+
+I think I'll need to do lots of good causal inference with this one.
+
+I'd like to push my sights beyond graduation to how well they do in the marketplace 
+
+
+You'd like to pick a good baseline with this one --
+  How many yrs/ratio of people who start in a department finish in the department?
+  And then, can I do better than this baseline with a predictive model? 
+  
+Turns out I don't much care what information is in the degree database--
+-- rather I simply  need to know if they are in it or not.  
+
+But I could use it to describe the data, like, simply yrs-to-degree
+and see if some degrees take longer than others.
+
+I could see how many graduates have -zero- transfer credits. 
+
+That'll need the merge with the FTF_DEMO, right? 
+
+Like maybe I should have started there.  This query is going to take all night!
+
+I could do "percentage of cohort that has graduated" per calendar year,
+and I could also do an extinction like thing where every cohort starts at year zero,
+and the percentage that have graduated after yr 1, 2, 3...etc. 
+
+I'd like to increment this, where I predicte graduation based on 'prior' data
+(like I used for math) and then update the prediction after every semester. 
+
+I wonder how many FTF have transfer units?  Like, you'd think the answer would be 'zero' 
+
+
+
+
+
+
