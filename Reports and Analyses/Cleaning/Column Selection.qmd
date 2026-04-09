@@ -6,6 +6,9 @@ editor: visual
 
 **PURPOSE:**  The purpose of this report is to examine and select columns from COMBINED_DEGREE_V table for further use and modeling.  It examines columns for similarity (such as "MAJOR" and "MAJOR_CD") and variance. 
 
+# Preliminary
+
+Columns were initially selected from a summary report of the entire database.  They were selected based on having complete or nearly complete data (a low percentage of missing values.)
 
 
 ```{r}
