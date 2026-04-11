@@ -38,6 +38,7 @@ courseData <- courseData[termExtract_Filter,] # apply filter
 ###############
 
 library(kableExtra)
+library(skimr)
 
 detSim <- function(col1,col2) {
 
@@ -198,134 +199,134 @@ index_list <- lapply(sample_list, function(x){
 
 # > colnames(courseData)
 keepColumns <- c(
-  [1] "TERM"                        
+  "TERM",                        
   # [2] "ACADYR" # redundant to term                      
-  # [3] "TERMEXTRACT"                 
-  # [4] "MAX_SNAP"    # zero variance                
-  [5] "EOTDATE"                     
+  "TERMEXTRACT",                 
+  "MAX_SNAP",    # zero variance                
+  "EOTDATE",                     
   # [6] "CENSUSDATE"  # not relevant; prefer EOTDATE              
-  [7] "EMPLID"                      
-  # [8] "ALT_ID"                      
+  "EMPLID",                      
+  # [8] "ALT_ID"        # not relevant                  
   # [9] "FULLNAME"      # redundant                
- [10] "STUDENTCAREER"  # What is this ???               
- [11] "SUBJECT_CD"                  
- [12] "SUBJECT_NAME"                
- [13] "SUBJECT_LONG"                
- [14] "SUBJECT_ACAD_ORG_CD"         
- [15] "CATNBR"                      
- [16] "CATNBR2"                     
- [17] "SECTION"                     
- [18] "TITLE"                       
- [19] "UNITS"                       
- [20] "GRADE"                       
- [21] "INSTEMPLID"                  
- [22] "INSTNAME"                    
+  "STUDENTCAREER",                
+  "SUBJECT_CD",                  
+  "SUBJECT_NAME",                
+  "SUBJECT_LONG",                
+  "SUBJECT_ACAD_ORG_CD",         
+  "CATNBR",                      
+  "CATNBR2",                     
+  "SECTION",                     
+  "TITLE",                       
+  "UNITS",                       
+  "GRADE",                       
+  "INSTEMPLID",                  
+  "INSTNAME",                    
 # [23] "CLASSNBR"    # too granular                  
- [24] "OFFERINGNBR"                 
- [25] "SESSIONCODE"                  
- [26] "COURSECAREER"   # "STUDENTCAREER" ?             
- [27] "SCHEDFLAG"                   
- [28] "WAUTOENRL"                   
- [29] "AUTOENROLL"                  
- [30] "COMPONENT"                   
- [31] "GENED"                       
- [32] "VARCREDIT"                   
- [33] "CONTRACT"                    
- [34] "DIRECTPAY"                   
- [35] "CORRESPONDENCE"              
- [36] "ONLINECOURSE"                
- [37] "IVC"                         
- [38] "IVC_HYBRID"                  
- [39] "COURSE_MODALITY"             
- [40] "INSTRUCTION_MODE"            
- [41] "TELECOURSE"                  
- [42] "STUDYABROAD"                 
- [43] "EDNET"                       
- [44] "HYBRIDCOURSE"                
- [45] "COURSE_LEVEL"                
- [46] "USHE_COURSE_LEVEL"           
+ "OFFERINGNBR",                 
+ "SESSIONCODE",                  
+ "COURSECAREER",   # "STUDENTCAREER" ?             
+ "SCHEDFLAG",                   
+ "WAUTOENRL",                   
+ "AUTOENROLL",                  
+ "COMPONENT",                   
+ "GENED",                       
+ "VARCREDIT",                   
+ "CONTRACT",                    
+ "DIRECTPAY",                   
+ "CORRESPONDENCE",              
+ "ONLINECOURSE",                
+ "IVC",                         
+ "IVC_HYBRID",                  
+ "COURSE_MODALITY",             
+ "INSTRUCTION_MODE",            
+ "TELECOURSE",                  
+ "STUDYABROAD",                 
+ "EDNET",                       
+ "HYBRIDCOURSE",                
+ "COURSE_LEVEL",                
+ "USHE_COURSE_LEVEL",           
 # [47] "FISCAL_YEAR_OF_STARTDT" # redundant to TERM     
- [48] "VP"                          
- [49] "VP_SHORT"                    
- [50] "VP_FORMAL"                   
- [51] "ACAD_COLLEGE_CD"             
- [52] "COLLEGE"                     
- [53] "COLLEGE_SHORT"               
- [54] "COLLEGE_FORMAL"              
- [55] "ACAD_COLLEGE_REG_SUPP"       
- [56] "ACAD_COLLEGE_TYPE"           
- [57] "ACAD_COLLEGE_CIP_CD"         
- [58] "ACAD_DEPARTMENT_CD"          
- [59] "DEPARTMENT"                  
- [60] "DEPARTMENT_SHORT"            
- [61] "DEPARTMENT_FORMAL"           
- [62] "ACAD_DEPARTMENT_REG_SUPP"    
- [63] "ACAD_DEPARTMENT_TYPE"        
- [64] "ACAD_DEPARTMENT_CIP_CD"      
- [65] "ACAD_DIVISION_CD"            
- [66] "DIVISION"                    
- [67] "DIVISION_SHORT"              
- [68] "DIVISION_FORMAL"             
- [69] "ACAD_DIVISION_REG_SUPP"      
- [70] "ACAD_DIVISION_TYPE"          
- [71] "ACAD_DIVISION_CIP_CD"        
- [72] "VP_CD"                       
- [73] "COLLEGE_CD"                  
- [74] "DEPARTMENT_CD"               
- [75] "DIVISION_CD"                 
- # [76] "ROLLUP_SORT_ORDER" # not relevant           
- [77] "PS_ACAD_ORG"                 
- [78] "PS_ACAD_GROUP"               
- [79] "CAMPUS"                      
- [80] "COURSE_CAMPUS"               
- [81] "USHE_SITE_TYPE_CD"           
- [82] "USHE_SITE_TYPE"              
- [83] "ONOFFCAMPUS"                 
- [84] "COURSELOCATION"              
- [85] "CONTACTMINUTES"              
- [86] "TEAMTAUGHT"                  
- [87] "XLIST"                       
- [88] "BEGTIME1"                    
- [89] "BEGTIME2"                    
- [90] "BEGTIME3"                    
- [91] "DAYS1"                       
- [92] "DAYS2"                       
- [93] "DAYS3"                       
- [94] "ENDTIME1"                    
- [95] "ENDTIME2"                    
- [96] "ENDTIME3"                    
- [97] "CLASSLOC1"                   
- [98] "CLASSLOC2"                   
- [99] "CLASSLOC3"                   
-[100] "CLASSLOCBUILDNAME1"          
-[101] "CLASSLOCBUILDROOM1"          
-[102] "CLASSLOCBUILDNAME2"          
-[103] "CLASSLOCBUILDROOM2"          
-[104] "CLASSLOCBUILDNAME3"          
-[105] "CLASSLOCBUILDROOM3"          
+  "VP",                          
+  "VP_SHORT",                    
+  "VP_FORMAL",                   
+  "ACAD_COLLEGE_CD",             
+  "COLLEGE",                     
+  "COLLEGE_SHORT",               
+  "COLLEGE_FORMAL",              
+  "ACAD_COLLEGE_REG_SUPP",       
+  "ACAD_COLLEGE_TYPE",           
+  "ACAD_COLLEGE_CIP_CD",         
+  "ACAD_DEPARTMENT_CD",          
+  "DEPARTMENT",                  
+  "DEPARTMENT_SHORT",            
+  "DEPARTMENT_FORMAL",           
+  "ACAD_DEPARTMENT_REG_SUPP",    
+  "ACAD_DEPARTMENT_TYPE",        
+  "ACAD_DEPARTMENT_CIP_CD",      
+  "ACAD_DIVISION_CD",            
+  "DIVISION",                    
+  "DIVISION_SHORT",              
+  "DIVISION_FORMAL",             
+  "ACAD_DIVISION_REG_SUPP",      
+  "ACAD_DIVISION_TYPE",          
+  "ACAD_DIVISION_CIP_CD",        
+  "VP_CD",                       
+  "COLLEGE_CD",                  
+  "DEPARTMENT_CD",               
+  "DIVISION_CD",                 
+# [76] "ROLLUP_SORT_ORDER" # not relevant           
+  "PS_ACAD_ORG",                
+  "PS_ACAD_GROUP",               
+  "CAMPUS",                      
+  "COURSE_CAMPUS",               
+  "USHE_SITE_TYPE_CD",           
+  "USHE_SITE_TYPE",              
+  "ONOFFCAMPUS",                 
+  "COURSELOCATION",              
+  "CONTACTMINUTES",              
+  "TEAMTAUGHT",                  
+  "XLIST",                       
+  "BEGTIME1",                    
+  "BEGTIME2",                    
+  "BEGTIME3",                    
+  "DAYS1",                       
+  "DAYS2",                       
+  "DAYS3",                       
+  "ENDTIME1",                    
+  "ENDTIME2",                    
+  "ENDTIME3",                    
+  "CLASSLOC1",                   
+  "CLASSLOC2",                   
+  "CLASSLOC3",                   
+ "CLASSLOCBUILDNAME1",          
+ "CLASSLOCBUILDROOM1",          
+ "CLASSLOCBUILDNAME2",          
+ "CLASSLOCBUILDROOM2",          
+ "CLASSLOCBUILDNAME3",          
+ "CLASSLOCBUILDROOM3",          
 # [106] "STARTDT" # redundant to term                    
 # [107] "ENDDT"   # redundant to term                    
-[108] "BUDGETCODE"                  
-[109] "LINEITEM"                    
-[110] "SERVICELEARNING"             
-[111] "GRADEGPA"                    
+ "BUDGETCODE",                  
+ "LINEITEM" ,                   
+ "SERVICELEARNING",             
+ "GRADEGPA",                    
 # [112] "XLIST_ID"  # prefer EMPLID                  
 # [113] "COMBINEDID"  # prefer EMPLID                
 # [114] "USHE_ACADYR" # redundant to term                
 # [115] "USHE_TERM"   # redundant to term                
 # [116] "TERM2"       # redundant to term                
 #  [117] "ORG_EFFDT" # # redundant to term                   
-[118] "CLASSENROLLMENTCAPACITY"     
-[119] "ROOM_MAX_1"                  
-[120] "ROOM_MAX_2"                  
-[121] "ROOM_MAX_3"                  
-[122] "TERM_NBR"                    
-[123] "CLASS_ATTR_LIST"             
-[124] "EXCLUDE_BUDGET_SCH"          
+ "CLASSENROLLMENTCAPACITY",     
+ "ROOM_MAX_1",                  
+ "ROOM_MAX_2",                  
+ "ROOM_MAX_3",                  
+ "TERM_NBR",                    
+ "CLASS_ATTR_LIST",             
+ "EXCLUDE_BUDGET_SCH",          
 # [125] "SPR_CORRECTION_NOT_USHE_FLAG" # sounds irrelevant
 # [126] "Section Divider: OLD"        # sounds irrelevant
-[127] "SUBJECTCOLL"                 
-[128] "SUBJECT"
+ "SUBJECTCOLL",                 
+ "SUBJECT"
 )
 
 ```
@@ -547,27 +548,227 @@ redundancy_results_list <- list(
 )
 
 redundancy_results_frame <- do.call(rbind, redundancy_results_list)
+redundancy_results_frame$var <- sub("^[^.]*\\.", "",   rownames(redundancy_results_frame))
+
 # rownames(result) <- gsub("^.*\\.", "", rownames(result))
 
 # Now I'll use that, and the hand-selected columns removed,
 # and then do the variance test on the remaining columns
 
+redundantColumns <- redundancy_results_frame$var[!redundancy_results_frame$keep]
+
 ```
 
 
-
-
-
-
-
-# Results Detail
+# Detecting zero, low variance, and high missing value columns
 
 ```{r}
 
-results_list
+# remove columns filtered out via redundancy tests 
 
-simList50_summary
+testColumns <- keepColumns[!keepColumns %in% redundantColumns]
 
-simList50_mean
+# sapply(courseData[,testColumns], class) |> unlist() |> table()
+
+# character   numeric   POSIXct    POSIXt 
+#       70         8         1         1 
+
+## CHARACTER ##
+
+charCols <- testColumns[sapply(courseData[,testColumns], is.character)]
+
+charSkim <- skim(courseData[,charCols])
+
+# zero variance categorical columns
+zv_col_char <- charSkim[charSkim$skim_type %in% c("character") & charSkim$character.n_unique == 1, 
+  ] |>
+  (\(x){x[,"skim_variable"][[1]]})() 
+
+# > zv_col_char
+# [1] "MAX_SNAP"           "EXCLUDE_BUDGET_SCH"
+
+
+# Empty columns
+
+colCompletion_char <- courseData[,charCols] |>
+  (\(x){x[,-which(colnames(x) %in% zv_col_char )]})() |> # remove zero variance columns
+  (\(x){lapply(x, function(y) {sum(is.na(y))})} )() |>
+     unlist() |>
+  (\(x){(nrow(courseData) - x)/nrow(courseData)})() |>
+  (\(x){x[order(x)]})()
+
+# missing more than 75% of the values
+empty_col_char <- colCompletion_char[colCompletion_char < 0.25] |>
+  names()
+   
+# low variance categorical columns
+
+value_proportions_char <- courseData[,charCols] |> #select character columns
+  (\(x){x[,-which(colnames(x) %in% zv_col_char )]})() |> # remove zero variance columns
+  (\(x){x[,-which(colnames(x) %in% empty_col_char )]})() |> # remove empty columns
+  (\(x){lapply(x,table, useNA = "always")})() |> # table per character 
+    (\(x){lapply(x, function(x){as.data.frame(x, stringsAsFactors = FALSE)})})() |> # convert to data frame
+  (\(x){lapply(x, function(x){x[order(x[,"Freq"],decreasing = TRUE),]})})()  |> # descending order
+  (\(x){lapply(x, function(x){ data.frame(Var1 = x[,"Var1"], prop = proportions(x[,"Freq"])) })})() # proportions
+
+# where largest value is >90% of the column, including NA values
+lv_col_char <- value_proportions_char |>
+  (\(x){lapply(x, function(x){max(x[,"prop"])})})()  |> 
+  (\(x){lapply(x, function(x){x>0.90} )})() |>
+  unlist() |>
+  (\(x){x[x]})() |>
+  names()
+  
+# value_proportions[lv_col_char] |> length() # 19 # wow!
+
+# What I think I'll do is ---
+
+# Set a high rejection bar
+# Train a model using these rejection columns
+# Recover any useful columns
+
+## NUMERIC ##
+
+numCols <- testColumns[sapply(courseData[,testColumns], is.numeric)]
+
+numSkim <- skim(courseData[,numCols])
+
+
+# View(numSkim)
+
+cv <- function(x) sd(x, na.rm=TRUE) / abs(mean(x, na.rm=TRUE))
+
+num_var <- sapply(courseData[, numCols], cv) |>
+  (\(x){x[order(x)]})() |>
+  round(3)
+
+#               GRADEGPA                TERM_NBR 
+#                  0.257                   0.346 
+#                  UNITS CLASSENROLLMENTCAPACITY 
+#                  0.530                   1.089 
+#         CONTACTMINUTES              ROOM_MAX_1 
+#                  1.116                   1.128 
+#             ROOM_MAX_2              ROOM_MAX_3 
+#                  1.300                   1.304 
+
+# None of these are rejected based on cross variance.
+
+# Empty columns
+
+colCompletion_num <- courseData[,numCols] |>
+#  (\(x){x[,-which(colnames(x) %in% zv_col_char )]})() |> # no zero variance columns to remove
+  (\(x){lapply(x, function(y) {sum(is.na(y))})} )() |>
+     unlist() |>
+  (\(x){(nrow(courseData) - x)/nrow(courseData)})() |>
+  (\(x){x[order(x)]})()
+
+
+# missing more than 75% of the values
+empty_col_num <- colCompletion_num[colCompletion_num < 0.25] |>
+  names()
+
+#> empty_col_num
+# [1] "ROOM_MAX_3" "ROOM_MAX_2" "ROOM_MAX_1"
+
+# Date columns have already been removed, except for one that will be kept for manipulation
+
+dateCols <- testColumns[sapply(courseData[, testColumns], function(x) {
+  inherits(x, c("Date", "POSIXct", "POSIXlt", "POSIXt"))
+})]
+
+``` 
+
+### Rejected columns
+
+#### Redundant
+
+```{r}
+
+redundancy_results_frame$var[!redundancy_results_frame$keep]
 
 ```
+
+#### Empty
+
+```{r}
+
+empty_col_char
+
+empty_col_num
+
+```
+
+#### Zero variance
+
+```{r}
+
+zv_col_char
+
+```
+
+#### Low variance
+
+```{r}
+
+lv_col_char
+
+```
+
+### Selected columns
+
+```{r}
+
+finalKeep <- keepColumns[!keepColumns %in% c(redundantColumns, empty_col_char, empty_col_num, zv_col_char, lv_col_char)]
+
+finalKeep
+
+
+```
+
+# Results Detail
+
+## Redundancy
+
+```{r}
+
+redundancy_results_frame
+
+# results_list
+
+# simList50_summary
+
+# simList50_mean
+
+```
+
+## Columns with completion rates less than 25%
+
+```{r}
+
+colCompletion_char[colCompletion_char < 0.25]
+
+
+colCompletion_num[colCompletion_num < 0.25]
+
+
+
+```
+
+## Zero variance columns
+
+```{r}
+
+zv_col_char
+
+```
+
+## Low variance columns
+
+```{r}
+
+value_proportions_char[lv_col_char]
+
+```
+
+
+
