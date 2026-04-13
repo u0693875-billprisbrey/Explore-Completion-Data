@@ -1,4 +1,4 @@
-# Query script for FTF course data (11Apr26)
+# Query script for FTF course data (12Apr26)
 # using down-selected columns 
 
 library(DBI)
@@ -28,7 +28,7 @@ queryStart <- Sys.time()
 print(queryStart)
 
 courseData <- dbGetQuery(con.ds, "
-SELECT 
+SELECT DISTINCT
  TERM,
  EOTDATE,
  main.EMPLID,
@@ -38,7 +38,7 @@ SELECT
  TITLE,
  UNITS,                  
  GRADE, 
- INSTEMPLID,   
+
  SCHEDFLAG,              
  AUTOENROLL,
  COMPONENT,              
@@ -71,13 +71,13 @@ SELECT
  CLASSENROLLMENTCAPACITY, 
  TERM_NBR,
  STUDENTCAREER,
- deg.DEGREECAREER,
- CASE WHEN deg.EMPLID IS NOT NULL THEN 'TRUE' ELSE 'FALSE' END AS IN_DEGREE_TABLE
+    CASE WHEN main.EMPLID IN (
+    SELECT DISTINCT EMPLID
+    FROM OBIA.COMBINED_DEGREE_V
+    WHERE DEGREECAREER = 'U'
+  ) THEN 'TRUE' ELSE 'FALSE' END AS IN_DEGREE_TABLE
+ 
 FROM OBIA.COMBINED_COURSE_V main
-LEFT JOIN (
-  SELECT DISTINCT EMPLID, DEGREECAREER
-  FROM OBIA.COMBINED_DEGREE_V
-) deg ON main.EMPLID = deg.EMPLID  
 WHERE 
  main.TERMEXTRACT IN ('E','S')
  AND main.EMPLID IN (
@@ -87,10 +87,13 @@ WHERE
 ;"
 )
 
+# REMOVED
+#  INSTEMPLID,   
+
 queryEnd <- Sys.time()
 
 print("Query complete") 
 print(queryEnd - queryStart)
-saveRDS(courseData, here::here("Data", "courseData_11Apr26.rds"))
+saveRDS(courseData, here::here("Data", "courseData_12Apr26.rds"))
 
 
