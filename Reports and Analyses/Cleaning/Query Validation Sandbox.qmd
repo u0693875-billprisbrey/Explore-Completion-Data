@@ -1,0 +1,284 @@
+---
+title: "Query Validation Sandbox"
+format: 
+  html: default
+  gfm: default
+  pdf: default
+  docx: default 
+editor: source
+execute: 
+  echo: false
+  warning: false  
+  message: false
+  error: false
+knitr: 
+  opts_chunk: 
+    fig.height: 5
+    fig.width: 7
+---
+
+**PURPOSE:**  The purpose of this document is to develop and investigate several ways to validate the query.  It is more akin to a "sandbox" rather than a formal report.
+
+Ideas:
+
+- I should look through my old work on course sequencing and DFWI's.   
+
+- Compare my three unique terms queried to the grad/not_grad course data 
+  - Try creating the same key in all of them and compare 
+  - See if the EMPLID's are in the right place
+  
+- Try calculating the graduating GPA and see if it matches the grad data 
+
+```{r}
+
+##########
+## LOAD ##
+##########
+
+## TERM FILES ##
+
+term.files <- list.files(here::here("Data","Terms_14Apr26"))
+
+termList <- lapply(term.files, function(x){
+  
+  readRDS(here::here("Data","Terms_14Apr26",x))
+  
+  })
+
+termData <- do.call(rbind, termList)
+
+## GRAD DATA ##
+
+gradData <- readRDS(here::here("Data", "gradData_7Apr26.rds"))
+
+## COURSE DATA ##
+
+courseData_grad <- readRDS(here::here("Data", "courseData_8Apr26_graduated_ftf.rds"))
+
+courseData_grad <- courseData_grad[courseData_grad$TERMEXTRACT %in% c("E","S"),]
+
+courseData_not <- readRDS(here::here("Data", "courseData_8Apr26_NOT_graduated_ftf.rds"))
+
+courseData_not <- courseData_not[courseData_not$TERMEXTRACT %in% c("E","S"),]
+
+```
+
+```{r}
+
+###############
+## FUNCTIONS ##
+###############
+
+findDupes <- function(data){
+  
+  
+  # First, find duplicate keys
+  theDupes <- table(data[,"key"], useNA = "always") |>
+    (\(x){x[order(x, decreasing = TRUE)]})() |>
+    (\(x){x[x>1]})() |>
+    names()
+  
+}
+
+
+```
+
+
+```{r}
+
+## SIMPLE EMPLID CHECK ##
+
+# all EMPLID's are consistently located.  GOOD!
+
+all(termData$EMPLID %in% gradData$EMPLID) # FALSE (as expected)
+
+all(termData$EMPLID[as.logical(termData$IN_DEGREE_TABLE)] %in% gradData$EMPLID) # TRUE # good 
+
+any(termData$EMPLID[!as.logical(termData$IN_DEGREE_TABLE)] %in% gradData$EMPLID) # FALSE # good
+
+# ok, this is looking good so far.
+
+all(termData$EMPLID %in% c(courseData_grad$EMPLID, courseData_not$EMPLID)) # TRUE # good
+
+all(termData$EMPLID[as.logical(termData$IN_DEGREE_TABLE)] %in% courseData_grad$EMPLID ) # TRUE # good
+
+any(termData$EMPLID[!as.logical(termData$IN_DEGREE_TABLE)] %in% courseData_grad$EMPLID ) # FALSE # good
+
+any(termData$EMPLID[as.logical(termData$IN_DEGREE_TABLE)] %in% courseData_not$EMPLID) # FALSE # good
+
+all(termData$EMPLID[!as.logical(termData$IN_DEGREE_TABLE)] %in% courseData_not$EMPLID) # TRUE # good
+
+
+```
+
+
+```{r}
+
+## TERM DATA KEY ##
+
+termData$key <- paste(termData$EMPLID,
+                      termData$TERM,
+                      termData$CATNBR,
+                    #  termData$INSTEMPLID,
+                    #  termData$COMPONENT,
+                      termData$SECTION,
+                    termData$SUBJECT_CD,
+                      sep = "_")
+
+length(unique(termData$key))/nrow(termData) 
+# EMPLID only # 0,12 # should be multiple classes per EMPLID 
+# add TERM    # 0,21 # should be multiple classes per EMPLID per term 
+# add CATNBR  # 0.867 # maybe multiple instructors or multiple sections (like labs) 
+# add INSTEMPLID # 0,908 # a small improvement
+# add COMPONENT # 0.999 # A few stubborn exceptions of multiple identical labs (upon inspection one example is 'bowling')
+# add SECTION # 1.0 # there it is!
+# remove COMPONENT # 1.0 # Can drop 'COMPONENT'; turns out you can't duplicate sections per CATNBR per student
+# remove INSTEMPLID # 0.994 # only a few sections with multiple instructors
+# add SUBJECTCD # 1 # so no multiple teachers per code/catnbr/section ?
+
+# NEXT QUESTION ---
+
+# Should I remove the INSTEMPLID ?
+
+
+termData_subset <- termData[,-which(colnames(termData) %in% c("INSTEMPLID")) ] |> unique()
+
+termData_subset$key <- paste(termData_subset$EMPLID,
+                      termData_subset$TERM,
+                      termData_subset$CATNBR,
+                      termData_subset$SUBJECT_CD,
+                    #  termData$INSTEMPLID,
+                    #  termData$COMPONENT,
+                      termData_subset$SECTION,
+                      sep = "_")
+
+length(unique(termData_subset$key))/nrow(termData_subset) 
+
+
+findDupes(termData_subset) |>
+  (\(x){sample(x,12)})() |> # select a dozen keys
+  (\(x){termData_subset[termData_subset$key %in% x,]})() |> # subset 
+  (\(x){x[,c(ncol(x), 1:(ncol(x)-1)) ]})() |> # rearrange column order
+  (\(x){x}[order(x$key), ])() |>
+  View(title = "dupes")
+
+findDupes(termData) |>
+  (\(x){View(termData[termData$key %in% x,])})()
+
+
+```
+
+For simplicity, I think I'll have to drop the INSTEMPLID -- although I expect that the INSTEMPLID will affect completion rates, since they have grade variation after all.  
+
+Or, rather than for simplicity, for the scope of the problem.  The "instructor-agnostic" philosophy probably won't change.
+
+Looks like the COMPONENT == "LAB"  might be something I filter on, or UNITS != 0
+
+```{r}
+
+# checking termData$COMPONENT == "LAB"
+
+# > sum(is.na(termData$COMPONENT))
+# [1] 0
+
+# > sum(is.na(termData$GRADEGPA))
+# [1] 36053
+
+mean(termData$GRADEGPA[termData$COMPONENT == "LAB"], na.rm=TRUE) # 3.67
+
+# so I have NA values for GRADEGPA
+# and I have grades for labs.
+
+# Great, just great
+
+mean(termData$UNITS[termData$COMPONENT == "LAB"], na.rm=TRUE) # 0.218
+
+# is there any GPA when units are zero?
+
+mean(termData$GRADEGPA[termData$UNITS == 0], na.rm=TRUE)  # NaN
+
+sum(!is.na(termData$GRADEGPA[termData$UNITS == 0])) # 0
+
+# Good, at least that check of internal consistency passed.
+
+# Do I only want classes that have a UNIT value?  Maybe that's my filter?
+
+table(termData$COMPONENT[termData$UNITS == 0])
+
+#  ACT   CLN   CNT   DIS   ENS   FLD   FLW   IND   L/D   LAB   LEC 
+#  282     1     3  7742     3     4    52     2    27 11596  1914 
+#  NET   SEM   STU   TPC   WRK 
+#    7     8    40     4    12 
+
+table(termData$COMPONENT[termData$UNITS != 0])
+
+#   ACT    CLN    DIS    ENS    FLD    FLW    HON    IND    L/D 
+#  4945   1200    513   1109     17   1223    211    686     25 
+#   LAB    LEC    PRA    PRJ    PRV    RSC    SEM    STU    THE 
+#  2309 115469   1781    672    648     94   9964   4781    328 
+#   TPC    WRK 
+#  3923    375 
+
+# seems like adding a WHERE UNITS != 0 might be reasonable for a query, 
+# or I might pass a column with a flag like "HAS_LAB" 
+
+```
+
+
+
+```{r}
+
+## SECTION ##
+
+# If I am adding "SECTION" to my key,
+# seems like there's a class number I should just bring in!
+
+
+
+```
+
+
+```{r}
+
+## COURSE DATA KEY (grad) ## 
+
+courseData_grad_subset <- courseData_grad[courseData_grad$TERM %in% unique(termData$TERM),]
+
+courseData_grad_subset$key <- paste(
+                    courseData_grad_subset$EMPLID,
+                      courseData_grad_subset$TERM,
+                      courseData_grad_subset$SUBJECT_CD,
+                      courseData_grad_subset$CATNBR,
+                    #  courseData_grad_subset$INSTEMPLID,
+                    #  termData$COMPONENT,
+                      courseData_grad_subset$SECTION,
+                      sep = "_")
+
+length(unique(courseData_grad_subset$key))/nrow(courseData_grad_subset)
+# 1 # good key, I guess
+
+dim(courseData_grad_subset)
+# [1] 140299     129
+
+theDupes <- findDupes(courseData_grad_subset)
+
+length(theDupes) # 0 
+
+findDupes(courseData_grad_subset) |>
+  (\(x){sample(x,12)})() |> # select a dozen keys
+  (\(x){courseData_grad_subset[courseData_grad_subset$key %in% x,]})() |> # subset 
+  (\(x){x[,c(ncol(x), 1:(ncol(x)-1)) ]})() |> # rearrange column order
+  (\(x){x}[order(x$key), ])() |>
+  View(title = "dupes")
+
+courseData_grad_subset$key2 <- paste(
+                    courseData_grad_subset$EMPLID,
+                      courseData_grad_subset$TERM,
+                      courseData_grad_subset$CATNBR,
+                      courseData_grad_subset$INSTEMPLID,
+                    #  termData$COMPONENT,
+                      courseData_grad_subset$SECTION,
+                      sep = "_")
+
+
+```

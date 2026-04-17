@@ -1,0 +1,69 @@
+Ideas
+4.16.2026
+
+- Complete isolation forest on grad data to find and exclude outliers
+  (unusual values deserve unusual explanations) 
+- Randomly select 1,000 EMPLIDs from the grad data; query their entire course history;
+  accurately calculate the GRADEGPA
+- Try to do this with my pulled data (first? simlutaneously?)
+- Review old data and old queries (different databases?  What did I learn?)
+- How do I track this in Jira?
+
+Feedback data:
+  I recall multiple teachers per class code appear in the feedback data, from table COURSE_EVAL.
+  Where are they in the course data?  (And I'm not finding exactly where it is in the feedback data)
+  
+DFWI data:
+  Wow, there's a lot of columns here that I'd like to see again.  Like their admit zip code. 
+  This is a complex query!  I'm not sure I want to understand it actually.
+  From the STUDENT.DM, I wonder if I can take some things from there? 
+  And I really like the proposal.  It looks like it was an attempt at 'matching.' 
+  And -- this resurrects the importance of the instructor.  They simply have too much variation in grading.
+  Oddly, this doesn't have my poor-man's graph database, though
+  
+Three Yr Graduation
+  Here it is!  My course sequencing.  It's so many students for so many classes that
+  it's over-whelming.  I've tried clustering, and I'm not sure what meaning this clustering has.
+  It's a 'sparse' data set, and it re-ignites my worries about standards and quality control--
+  what's keeping us from becoming a McDojo, a diploma mill?
+  If I was a dean, would I look at "graduation rates" or would I look at first year earnings?
+  Or some kind of professional accreditation?  This is interesting: https://collegescorecard.ed.gov/data/api-documentation/
+  
+  What about the college debt for all of these people who don't graduate? !!! That's sucky!  Scammy!
+
+  Although I have the terms in order --- could I just calculate "yr.diff" and get the same thing? Or do I really want ordinals?
+  Maybe I make three clusters --- front-loaded classes, back-loaded classes, and evenly-distributed classes (?)
+    Or maybe I look at people who do it backwards -- take a 4000-level class in Yr 1, for example 
+  Actually what I'd like is an "apprenticeship" program.
+  
+  Seems like I'd want to evaluate a program on three metrics -- graduation rate, first yr wage, and first yr employment rate.
+  Add to that "debt load" and I'd extract 'educational ROI' -- what else would I want to know about a college program?  
+  
+  And the "Distinguishing Early Candidates vC9" is a great report!
+   
+   Do I lift this and just start working away?  
+   How much of this do I re-do with my additional knowledge?
+   How much do I let an AI agent critique and re-write?  ("Ding! Ding! Ding!")
+   
+   It's actually a tough report and some legends got lost (impossibly.)
+   
+   It really could do a better job explaining the "sequencing" or "clustering"
+   And it's really dumb to look at the credit total after three years to see who graduated!
+   
+   Rather than predict a binary (>3 or <3 yrs), I should predict "years to graduate" as a regression.
+   First, I'd predict a binary -- <8 yrs or >8yrs, where >8yrs is -- well -- a drop-out.
+   Then, I'd increment (or decrement) my prediction window.  Start at Admit Prior, and then
+   add First Year information, and then add Second Year information.  
+   
+   
+
+    
+  
+    
+  
+  
+
+  
+
+  
+  
